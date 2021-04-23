@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+"""
+Add extra webpage by adding it in urlpatterns following the code below
+"""
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('gtgp.urls'))
