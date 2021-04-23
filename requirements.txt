@@ -13,8 +13,6 @@ cffi==1.14.4
 chardet==4.0.0
 click==7.1.2
 conda==4.9.2
-conda-package-handling @ file:///tmp/build/80754af9/conda-package-handling_1603018141399/work
-cryptography @ file:///tmp/build/80754af9/cryptography_1605544487601/work
 cycler==0.10.0
 dask==2021.2.0
 defusedxml==0.6.0
@@ -28,7 +26,6 @@ fabio==0.11.0
 Flask==1.1.2
 h5py==3.1.0
 hyperspy==1.6.1
-idna @ file:///tmp/build/80754af9/idna_1593446292537/work
 imageio==2.9.0
 iniconfig==1.1.1
 ipykernel==5.4.3
@@ -82,9 +79,7 @@ pycosat==0.6.3
 pycparser==2.20
 pyFAI==0.20.0
 Pygments==2.7.4
-pyOpenSSL @ file:///tmp/build/80754af9/pyopenssl_1605545627475/work
 pyrsistent==0.17.3
-PySocks @ file:///tmp/build/80754af9/pysocks_1605305779399/work
 pytest==6.2.2
 python-dateutil==2.8.1
 pytz==2021.1
@@ -99,7 +94,6 @@ scipy==1.6.0
 Send2Trash==1.5.0
 seqio==0.5
 silx==0.14.0
-six @ file:///tmp/build/80754af9/six_1605205327372/work
 sparse==0.11.2
 sqlparse==0.4.1
 sympy==1.7.1
