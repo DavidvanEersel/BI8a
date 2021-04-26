@@ -12,7 +12,6 @@ certifi==2020.12.5
 cffi==1.14.4
 chardet==4.0.0
 click==7.1.2
-conda==4.9.2
 cycler==0.10.0
 dask==2021.2.0
 defusedxml==0.6.0
