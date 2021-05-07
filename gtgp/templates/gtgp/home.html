@@ -1,5 +1,83 @@
-<html>
-    <body>
-        homepagina
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../../static/gtgp/main.css" />
+    <script
+      type="text/javascript"
+      src="../../static/gtgp/functionality.js"
+    ></script>
+    <title>GTGP - Home</title>
+  </head>
+  <body>
+    <!-- Hello there -->
+    <div class="navbar">
+      <a href="" class="navbar_title navbar_spacer">GTGP</a>
+      <div class="content_spacer"></div>
+      <a
+        href="javascript:void(0);"
+        onclick="hamburger()"
+        class="hamburger"
+        name="hamburger"
+      >
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </a>
+      <div class="navbar_breaker"></div>
+      <ul class="navbar_navigator" id="hamburger_menu">
+        <li><a href="">Home</a></li>
+        <li><a href="upload.html">Upload</a></li>
+        <li><a href="manual.html">Manual</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+    <div class="text_all">
+      <h1>GTGP</h1>
+      <h2>Welcome</h2>
+      <p>Search for the newest literature here.</p>
+      <h3>Enter your query</h3>
+      <p></p>
+      <form method="POST">
+        <div class="user_input">
+          <p>
+            <label for="text_keywords">Keywords:</label> <br />
+            <input
+              type="text"
+              name="text_keywords"
+              placeholder="Enter your keywords"
+            />
+            <label for="radio_keyword">AND</label>
+            <input type="radio" name="radio_keyword" value="AND" />
+            <label for="radio_keyword">OR</label>
+            <input type="radio" name="radio_keyword" value="OR" />
+          </p>
+          <p>
+            <label for="text_gene_name">Gene names:</label> <br />
+            <input
+              type="textarea"
+              name="text_gene_name"
+              placeholder="Enter your gene names"
+            />
+          </p>
+          <p>
+            <label for="date_after">Publication Date (After):</label> <br />
+            <input type="date" name="date_after" />
+          </p>
+          <p>
+            <label for="date_after">Exclude gene panel:</label> <br />
+            <input
+              type="text"
+              name="text_exclude_genepanel"
+              placeholder="Enter exclusion"
+            />
+          </p>
+          <button type="submit" name="submit">Submit</button>
+        </div>
+      </form>
+      <h2>Results</h2>
+      <p>Results should be displayed here</p>
+    </div>
+  </body>
 </html>
