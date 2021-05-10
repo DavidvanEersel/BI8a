@@ -4,7 +4,7 @@ from utils import test
 
 def index(request):
     print(test.main())
-    return render(request, 'gtgp/templates/home.html')
+    return render(request, 'gtgp/home.html')
 
 def upload(request):
     return render(request, 'gtgp/upload.html')
