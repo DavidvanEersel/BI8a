@@ -11,4 +11,7 @@ def upload(request):
 
 def manual(request):
     return render(request, 'gtgp/manual.html')
+
+def about(request):
+    return render(request, 'gtgp/about.html')
 # Create your views here.
