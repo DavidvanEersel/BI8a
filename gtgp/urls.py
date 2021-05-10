@@ -8,4 +8,4 @@ urlpatterns = [
     path('upload.html', views.upload, name='upload'),
     path('manual.html', views.manual, name='manual'),
     path('about.html', views.about, name='about'),
-]
+] 
