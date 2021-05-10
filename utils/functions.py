@@ -1,4 +1,4 @@
-from Bio import entrez 
+from Bio import Entrez
 
 def entrezSearch():
     idList = []
@@ -6,8 +6,8 @@ def entrezSearch():
     Entrez.email = "email"    #Misschien gebruiker om een email vragen? 
     searchFrom = '2020/06/12' #Must be YYYY/MM/DD OF YYYY/MM OF YYYY
     term='orchid'             #In Teams staat een advanced query voor een zoekterm
-    handle = entrez.esearch(db="pubmed", term=term, mindate=searchFrom)
-    record = entrez.read(handle)
+    handle = Entrez.esearch(db="pubmed", term=term, mindate=searchFrom)
+    record = Entrez.read(handle)
     handle.close()
     for id in record:
         print(id['idList'])
