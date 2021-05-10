@@ -9,4 +9,6 @@ def index(request):
 def upload(request):
     return render(request, 'gtgp/upload.html')
 
+def upload(request):
+    return render(request, 'gtgp/manual.html')
 # Create your views here.
