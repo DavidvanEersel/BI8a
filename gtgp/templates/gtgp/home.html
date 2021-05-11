@@ -43,11 +43,11 @@
         <div class="user_input">
           <p>
             <label for="text_keywords">Keywords:</label> <br />
-            <input
+            <textarea
               type="text"
               name="text_keywords"
               placeholder="Enter your keywords"
-            />
+            ></textarea>
             <label for="radio_keyword">AND</label>
             <input type="radio" name="radio_keyword" value="AND" />
             <label for="radio_keyword">OR</label>
@@ -55,23 +55,23 @@
           </p>
           <p>
             <label for="text_gene_name">Gene names:</label> <br />
-            <input
+            <textarea
               type="textarea"
               name="text_gene_name"
               placeholder="Enter your gene names"
-            />
+            ></textarea>
           </p>
           <p>
             <label for="date_after">Publication Date (After):</label> <br />
             <input type="date" name="date_after" />
           </p>
           <p>
-            <label for="date_after">Exclude gene panel:</label> <br />
-            <input
+            <label for="text_exclude_genepanel">Exclude gene panel:</label> <br />
+            <textarea
               type="text"
               name="text_exclude_genepanel"
               placeholder="Enter exclusion"
-            />
+            ></textarea>
           </p>
           <button type="submit" name="submit">Submit</button>
         </div>
