@@ -1,52 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="/static/gtgp/main.css" />
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="/static/gtgp/main.css"/>
     <script
-      type="text/javascript"
-      src="/static/gtgp/functionality.js"
+            type="text/javascript"
+            src="/static/gtgp/functionality.js"
     ></script>
     <title>GTGP - Upload</title>
-  </head>
-  <body>
-    <!-- Hello there -->
-    <div class="navbar">
-      <a href="" class="navbar_title navbar_spacer">GTGP</a>
-      <div class="content_spacer"></div>
-      <a
-        href="javascript:void(0);"
-        onclick="hamburger()"
-        class="hamburger"
-        name="hamburger"
-      >
+</head>
+<body>
+<!-- Hello there -->
+<div class="navbar">
+    <a href="" class="navbar_title navbar_spacer">GTGP</a>
+    <div class="content_spacer"></div>
+    <a
+            href="javascript:void(0);"
+            onclick="hamburger()"
+            class="hamburger"
+            name="hamburger"
+    >
         <div></div>
         <div></div>
         <div></div>
         <div></div>
-      </a>
-      <div class="navbar_breaker"></div>
-      <ul class="navbar_navigator" id="hamburger_menu">
+    </a>
+    <div class="navbar_breaker"></div>
+    <ul class="navbar_navigator" id="hamburger_menu">
         <li><a href="home.html">Home</a></li>
         <li><a href="">Upload</a></li>
         <li><a href="manual.html">Manual</a></li>
         <li><a href="about.html">About</a></li>
-      </ul>
-    </div>
-    <div class="text_all">
-      <h1>Upload</h1>
-      <h2>Gene Panel Upload</h2>
-      <p>Upload your gene panel value delimited file here.</p>
-      <h3>Upload</h3>
-      <form method="POST" enctype="multipart/form-data">
+    </ul>
+</div>
+<div class="text_all">
+    <h1>Upload</h1>
+    <h2>Gene Panel Upload</h2>
+    <p>Upload your gene panel value delimited file here.</p>
+    <h3>Upload</h3>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
         <div class="user_input">
-          <p>
-            <label for="file_upload">File upload:</label> <br />
-            <input type="file" accept=".csv,.tsv" name="file_upload" />
-          </p>
-          <button type="submit" name="submit">Submit</button>
+            <p>
+            <label for="file_upload">File upload:</label> <br/>
+            <input type="file" accept=".csv,.tsv" name="file_upload"/>
+            </p>
+            <button type="submit" name="submit">Submit</button>
         </div>
-      </form>
-    </div>
-  </body>
+    </form>
+</div>
+</body>
 </html>

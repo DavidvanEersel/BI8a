@@ -1,7 +1,6 @@
 from django.shortcuts import render
 
 
-
 def index(request):
     if request.method == 'POST':
         text_keywords = request.POST.get('text_keywords')
@@ -16,20 +15,25 @@ def index(request):
                          "gene_name": text_gene_name,
                          "date_after": date_after,
                          "exclude_genepanel": text_exclude_genepanel}
+            print(parameter)
+            return render(request, 'gtgp/home.html')
         elif text_gene_name is None:
             parameter = {"keywords": text_keywords,
                          "date_after": date_after,
                          "exclude_genepanel": text_exclude_genepanel}
-
-            return render(request, 'gtgp/home.html', {'results': results})
+            print(parameter)
+            return render(request, 'gtgp/home.html')
 
         else:
-            return render(request, 'gtgp/home.html', {'results': results})
+            return render(request, 'gtgp/home.html')
     else:
-        return render(request, 'gtgp/home.html', {'results': results})
+        return render(request, 'gtgp/home.html')
 
 
 def upload(request):
+    if request.method == "POST":
+        test = request.POST.get("file_upload")
+        print(test)
     return render(request, 'gtgp/upload.html')
 
 
