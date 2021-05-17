@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf.urls.i18n import i18n_patterns
+from django.conf.urls.static import static
 
 from . import views
 
@@ -8,6 +10,4 @@ urlpatterns = [
     path('upload.html', views.upload, name='upload'),
     path('manual.html', views.manual, name='manual'),
     path('about.html', views.about, name='about'),
-    i18n_patterns(path('admin/', admin.site.urls), prefix_default_language=False) + \
-    #static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + \
-    static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) ]
+    ]
