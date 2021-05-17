@@ -25,7 +25,5 @@ Add extra webpage by adding it in urlpatterns following the code below
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('gtgp.urls')),
-    i18n_patterns(path('admin/', admin.site.urls), prefix_default_language=False) + \
-    #static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + \
-    static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 
+    path(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
 ]

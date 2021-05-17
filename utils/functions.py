@@ -4,14 +4,6 @@ import requests
 
 def entrezSearch(keywords="orchid",
                  genenames=["ABC", "ESR1"],
-<<<<<<< HEAD
-                 search_from="2020/06/12",
-                 ):
-    Entrez.email = "email"  # Misschien gebruiker om een email vragen?
-
-    searchFrom = '2020/06/12'  # Must be YYYY/MM/DD OF YYYY/MM OF YYYY
-    term = 'orchid'  # In Teams staat een advanced query voor een zoekterm
-=======
                  searchFrom="2020/06/12",
                  ):
    
@@ -43,7 +35,6 @@ def entrezSearch(keywords="orchid",
     Entrez.email = "email"    #Misschien gebruiker om een email vragen? 
     searchFrom = '2020/06/12' #Must be YYYY/MM/DD OF YYYY/MM OF YYYY
     term='orchid'             #In Teams staat een advanced query voor een zoekterm
->>>>>>> devbranch
     handle = Entrez.esearch(db="pubmed", term=term, mindate=searchFrom)
     res = Entrez.read(handle)
     handle.close()
@@ -52,13 +43,8 @@ def entrezSearch(keywords="orchid",
     list_ids = res['IdList']
 
     return list_ids
-<<<<<<< HEAD
 
 
-=======
-
-
->>>>>>> devbranch
 def pubtatorSearch(list_ids):
     # TODO Maak vind een manier om met de NCBI link te werken
     # Voorbeelden pubtator search:
@@ -111,9 +97,3 @@ def pubtatorSearch(list_ids):
             print("Next")
 
     return None
-<<<<<<< HEAD
-
-
-pubtatorSearch(entrezSearch())
-=======
->>>>>>> devbranch

@@ -1,6 +1,5 @@
 from django.urls import path
-from django.conf.urls.i18n import i18n_patterns
-from django.conf.urls.static import static
+
 
 from . import views
 
