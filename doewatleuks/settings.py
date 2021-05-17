@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'gtgp',
-    'storage'
 ]
 
 MIDDLEWARE = [
@@ -104,7 +103,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -125,28 +123,10 @@ PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 # STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static').replace('\\', '/')
 # STATIC_URL = '/static/'
 
-
+STATIC_URL = os.environ.get("DJANGO_STATIC_URL", "/static/")
+STATIC_ROOT = os.environ.get("DJANGO_STATIC_ROOT", "./static/")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-AZURE_ACCOUNT_NAME = 'bioinfblok8'
-AZURE_STORAGE_KEY = 'iMHnR67g205SjjPYxJyuqXXcWhzneQieckea9pJ++X1R3jtZa5r0D9vnM4VPPPq4WbtGXVxOBdcvabGI2iY4Vw=='
-AZURE_STATIC_CONTAINER = 'DefaultEndpointsProtocol=https;AccountName=bioinfblok8;AccountKey=iMHnR67g205SjjPYxJyuqXXcWhzneQieckea9pJ++X1R3jtZa5r0D9vnM4VPPPq4WbtGXVxOBdcvabGI2iY4Vw==;EndpointSuffix=core.windows.net'
-
-AZURE_CUSTOM_DOMAIN = f'bioinfblok8.blob.core.windows.net'
-#AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.azureedge.net'
-
-DEFAULT_FILE_STORAGE = 'doewatleuks.backend.AzureMediaStorage'
-STATICFILES_STORAGE  = 'doewatleuks.backend.AzureStaticStorage'
-
-#STATIC_URL = os.environ.get("DJANGO_STATIC_URL", "/static/")
-#STATIC_ROOT = os.environ.get("DJANGO_STATIC_ROOT", "./static/")
-STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{AZURE_STATIC_CONTAINER}/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# any static paths you want to publish
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'bioinfblok8', 'static')
-]
