@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
+from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 """
 Add extra webpage by adding it in urlpatterns following the code below
@@ -24,5 +25,5 @@ Add extra webpage by adding it in urlpatterns following the code below
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('gtgp.urls')),
-    # path(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
+    path(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
 ]
