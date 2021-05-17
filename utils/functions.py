@@ -32,6 +32,11 @@ def entrezSearch(keywords="orchid",
 
     handle = Entrez.esearch(db="pubmed", term=term, mindate=searchFrom)
     res = Entrez.read(handle)
+    Entrez.email = "email"    #Misschien gebruiker om een email vragen? 
+    searchFrom = '2020/06/12' #Must be YYYY/MM/DD OF YYYY/MM OF YYYY
+    term='orchid'             #In Teams staat een advanced query voor een zoekterm
+    handle = Entrez.esearch(db="pubmed", term=term, mindate=searchFrom)
+    record = Entrez.read(handle)
     handle.close()
 
     # https://www.ncbi.nlm.nih.gov/dbvar/content/tools/entrez/
