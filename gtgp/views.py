@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from utils import functions
 
 
 def index(request):
@@ -21,6 +22,7 @@ def index(request):
             parameter = {"keywords": text_keywords,
                          "date_after": date_after,
                          "exclude_genepanel": text_exclude_genepanel}
+            functions.entrezSearch(parameter)
             print(parameter)
             return render(request, 'gtgp/home.html')
 
