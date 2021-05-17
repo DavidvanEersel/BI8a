@@ -2,41 +2,49 @@ from Bio import Entrez
 import requests
 
 
-def entrezSearch(keywords="orchid",
-                 genenames=["ABC", "ESR1"],
-                 searchFrom="2020/06/12",
-                 ):
+def entrezSearch(parameter):
     """Function searches PubMed for articles related to a search
     Input:  string keywords(str(term1 AND/OR term2))
             list genenames[gene1, gene2]
             string search_from(str date example(2020/06/12))
     Return: list[pmid's]"""
-
-    Entrez.email = "sinbadisatwat@gmail.com"       # Misschien gebruiker om een email vragen?
-    searchFrom = '2020/06/12'                      # Must be YYYY/MM/DD OF YYYY/MM OF YYYY
-    term = 'orchid'                                # In Teams staat een advanced query voor een zoekterm
-
-    if genenames != "":                            # Om errors af te vangen als er niks is ingevoerd. 
-        for gene in genenames:
-            keywords += " AND " + gene
-    if searchFrom == "":
-        searchFrom = "1800/01/01"
-     
+    # Must be YYYY/MM/DD OF YYYY/MM OF YYYY
+    # In Teams staat een advanced query voor een zoekterm
+    # Moeten een manier zien te maken om AND / OR af anders te maken uit de website, anders
+    # Misschien gebruiker om een email vragen?
+    # https://www.ncbi.nlm.nih.gov/dbvar/content/tools/entrez/
+    keywords = parameter["keywords"]
+    search_from = parameter["date_after"]
+    query = ""
+    or_ = False
+    for i in keywords:
+        if i == '(':
+            i = "("
+            or_ = True
+        else:
+            quote = True
+        if i == ')':
+            or_ = False
+            i = ")"
+        else:
+            quote = True
+        if i == ";":
+            if or_ is True:
+                i = " OR "
+            else:
+                i = " AND "
+        query = query + i
     
+    if search_from == "":
+        search_from = "1800/01/01"
 
-    handle = Entrez.esearch(db="pubmed", term=term, mindate=searchFrom)
-    res = Entrez.read(handle)
-    Entrez.email = "email"    #Misschien gebruiker om een email vragen? 
-    searchFrom = '2020/06/12' #Must be YYYY/MM/DD OF YYYY/MM OF YYYY
-    term='orchid'             #In Teams staat een advanced query voor een zoekterm
-    handle = Entrez.esearch(db="pubmed", term=term, mindate=searchFrom)
-    res = Entrez.read(handle)
+    Entrez.email = "sinbadisatwat@gmail.com"
+    handle = Entrez.esearch(db="pubmed", term=query, field="tiab", mindate=search_from)
+    record = Entrez.read(handle)
     handle.close()
 
-    # https://www.ncbi.nlm.nih.gov/dbvar/content/tools/entrez/
-    list_ids = res['IdList']
-
-    return list_ids
+    list_ids = record['IdList']
+    pubtatorSearch(list_ids)
 
 
 def pubtatorSearch(list_ids):
