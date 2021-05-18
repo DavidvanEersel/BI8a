@@ -44,98 +44,110 @@ def entrez_search(parameter):
         search_from = "1800/01/01"
 
     Entrez.email = "sinbadisatwat@gmail.com"
-    handle = Entrez.esearch(db="pubmed", term=query, field="tiab", mindate=search_from)
+    info = Entrez.esearch(db='pubmed', term=query)
+    record = Entrez.read(info)
+    count = record["Count"]
+    print(count)
+    info.close()
+    handle = Entrez.esearch(db="pubmed", term=query, field="tiab", mindate=search_from, retmax=count)
     record = Entrez.read(handle)
     handle.close()
 
     list_ids = record['IdList']
 
-    return pubtatorSearch(list_ids)
+    return pubtatorSearch(list_ids, count)
 
 
-def pubtatorSearch(list_ids):
+def pubtatorSearch(list_ids, count):
     """Function uses PubTator API to textmine found hits. Hits get rudimentary score.
     Input:  list[str(pmid), str(pmid)]
     Return: Dict{key(str(pmid)) : tuple(str(score), str(pubtator_link), gennames[gene], diseases[disease], mutations[mutation])) Lists may be empty.
     OR
     Return: None if input is empty or null"""
-    
+
     if list_ids == '' or list_ids == None:
         return None
 
     # Defaulting to gene, disease and mutation
     base_url = "https://www.ncbi.nlm.nih.gov/research/pubtator-api/publications/export/pubtator?pmids={}&concepts=gene,disease,mutation"
 
-    # Format IDs for PubTator
-    string_ids = ""
-    for pmcid in list_ids:
-        string_ids += pmcid + ','
-
-    # Remove last comma delimiter
-    string_ids = string_ids[:-1]
-    format_url = base_url.format(string_ids)
-
-    # Get page details, var.text is important here
-    res = requests.get(format_url)
-
-    # Scores: Gene, mutation or disease in title:   +5 pts
-    # Scores: Mutation or disease in abstract:      +2 pts
-    # Scores: Gene in abstract                      +1 pt
-    
     articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"
     articleScore = 0
     gennames = []
     diseases = []
     mutations = []
+    pmid = ""
     returnDict = {}
-    text = res.text.split("\n")
-    
-    for line in text:
-        scored = False
+    print(count)
+    if int(count) > 1000:
+        for j in range(0, len(list_ids), 100):
 
-        if '|t|' in line:
-            titleLine = line.split('|t|')
-            pmid = titleLine[0]
-            title = titleLine[1]
-            continue
-        
-        if '|a|' in line:
-            continue
-        
-        if line != "":
-            # print(line.split("\t"))
-            terms = line.split("\t")
-            if int(terms[1]) < len(title):
-                articleScore += 5
-                scored = True
-            if terms[4] == "Disease":
-                diseases = checkList(terms[3], diseases)
-                if scored == False:
-                    articleScore += 2
-            elif terms[4] == "Mutation":
-                mutations = checkList(terms[3], mutations)
-                if scored == False: 
-                    articleScore += 2
-            elif terms[4] == "Gene":
-                gennames = checkList(terms[3], gennames)
-                if scored == False: 
-                    articleScore += 1
-            else:
-                print("A unexpected scoring error has occured for: "+ terms[4])
+            # Format IDs for PubTator
+            string_ids = ""
+            try:
+                for i in range(100):
+                    string_ids += list_ids[j+i] + ','
+            except IndexError:
+                continue
+            # Remove last comma delimiter
+            string_ids = string_ids[:-1]
+            format_url = base_url.format(string_ids)
 
-        if line == "":
-            # Dict{key(str(pmid)) : tuple(str(articleScore), str(articleLink), gennames[gene], diseases[disease], mutations[mutation])) Lists may be empty.
-            articleLink = articleLink.replace("article", pmid)        
-            valueTuple = (str(articleScore), articleLink, gennames, diseases, mutations)
-            if pmid != "":
-                returnDict[pmid] = valueTuple
-            titleLine = ""
-            articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"
-            articleScore = 0
-            gennames = []
-            diseases = []
-            mutations = []
-            pmid = ""
+            # Get page details, var.text is important here
+            res = requests.get(format_url)
+
+            # Scores: Gene, mutation or disease in title:   +5 pts
+            # Scores: Mutation or disease in abstract:      +2 pts
+            # Scores: Gene in abstract                      +1 pt
+
+            text = res.text.split("\n")
+
+            for line in text:
+                scored = False
+
+                if '|t|' in line:
+                    titleLine = line.split('|t|')
+                    pmid = titleLine[0]
+                    title = titleLine[1]
+                    continue
+
+                if '|a|' in line:
+                    continue
+
+                if line != "":
+                    terms = line.split("\t")
+                    if int(terms[1]) < len(title):
+                        articleScore += 5
+                        scored = True
+                    if terms[4] == "Disease":
+                        diseases = checkList(terms[3], diseases)
+                        if not scored:
+                            articleScore += 2
+                    elif terms[4] == "Mutation" or terms[4] == "DNAMutation" or terms[4] == "ProteinMutation" or terms[
+                        4] == "SNP":
+                        mutations = checkList(terms[3], mutations)
+                        if not scored:
+                            articleScore += 2
+                    elif terms[4] == "Gene":
+                        gennames = checkList(terms[3], gennames)
+                        if not scored:
+                            articleScore += 1
+                    else:
+                        print("A unexpected scoring error has occured for: " + terms[4])
+
+                if line == "":
+                    articleLink = articleLink.replace("article", pmid)
+                    valueTuple = (gennames, diseases, mutations, articleLink, str(articleScore))
+                    if pmid != "":
+
+                        returnDict[pmid] = valueTuple
+                        pmid = ''
+                    articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"
+                    articleScore = 0
+                    gennames = []
+                    diseases = []
+                    mutations = []
+    print("done")
 
     return returnDict
 

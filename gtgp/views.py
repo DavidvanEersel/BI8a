@@ -17,6 +17,7 @@ def index(request):
                          "date_after": date_after,
                          "exclude_genepanel": text_exclude_genepanel}
             results = functions.entrez_search(parameter)
+
             return render(request, 'gtgp/results.html', {'results':results})
 
         elif text_gene_name is None:
