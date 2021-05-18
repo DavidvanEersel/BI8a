@@ -2,7 +2,7 @@ from Bio import Entrez
 import requests
 
 
-def entrezSearch(parameter):
+def entrez_search(parameter):
     """Function searches PubMed for articles related to a search
     Input:  string keywords(str(term1 AND/OR term2))
             list genenames[gene1, gene2]
@@ -14,8 +14,8 @@ def entrezSearch(parameter):
     # In Teams staat een advanced query voor een zoekterm
     # Misschien gebruiker om een email vragen?
     # https://www.ncbi.nlm.nih.gov/dbvar/content/tools/entrez/
-    
-    if parameter == "" or parameter == None:
+
+    if parameter == "" or parameter is None:
         return None
 
     keywords = parameter["keywords"]
@@ -39,7 +39,7 @@ def entrezSearch(parameter):
             else:
                 i = " AND "
         query = query + i
-    
+
     if search_from == "":
         search_from = "1800/01/01"
 
@@ -49,21 +49,23 @@ def entrezSearch(parameter):
     handle.close()
 
     list_ids = record['IdList']
-    pubtatorSearch(list_ids)
+
+    return pubtator_search(list_ids)
 
 
-def pubtatorSearch(list_ids):
+def pubtator_search(list_ids):
     """Function uses PubTator API to textmine found hits. Hits get rudimentary score.
     Input:  list[str(pmid), str(pmid)]
     Return: Dict{key(str(pmid)) : tuple(str(score), str(pubtator_link), gennames[gene], diseases[disease], mutations[mutation])) Lists may be empty.
     OR
     Return: None if input is empty or null"""
-    
-    if list_ids == '' or list_ids == None:
+
+    if list_ids == '' or list_ids is None:
         return None
 
     # Defaulting to gene, disease and mutation
-    base_url = "https://www.ncbi.nlm.nih.gov/research/pubtator-api/publications/export/pubtator?pmids={}&concepts=gene,disease,mutation"
+    base_url = "https://www.ncbi.nlm.nih.gov/research/pubtator-api/publications/export/pubtator?pmids={" \
+               "}&concepts=gene,disease,mutation "
 
     # Format IDs for PubTator
     string_ids = ""
@@ -80,64 +82,66 @@ def pubtatorSearch(list_ids):
     # Scores: Gene, mutation or disease in title:   +5 pts
     # Scores: Mutation or disease in abstract:      +2 pts
     # Scores: Gene in abstract                      +1 pt
-    titleLine = ""
+    title = []
     scored = False
     articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"
     articleScore = 0
     gennames = []
     diseases = []
     mutations = []
+    pmid = ''
     returnDict = {}
     text = res.text.split("\n")
-    
+
     for line in text:
+        try:
+            if '|t|' in line:
+                titleLine = line.split('|t|')
+                pmid = titleLine[0]
+                title = titleLine[1]
+                continue
 
-        if '|t|' in line:
-            titleLine = line.split('|t|')
-            pmid = titleLine[0]
-            title = titleLine[1]
-            continue
-        
-        if '|a|' in line:
-            continue
+            if '|a|' in line:
+                continue
 
-        
-        if line != "":
-            # print(line.split("\t"))
-            terms = line.split("\t")
-            if int(terms[1]) < len(title):
-                articleScore += 5
-                scored = True
-            if terms[4] == "Disease":
-                diseases = checkList(terms[3], diseases)
-                if scored == False:
-                    articleScore += 2
-            elif terms[4] == "Mutation":
-                mutations = checkList(terms[3], mutations)
-                if scored == False: 
-                    articleScore += 2
-            elif terms[4] == "Gene":
-                gennames = checkList(terms[3], gennames)
-                if scored == False: 
-                    articleScore += 1
-            else:
-                print("A unexpected scoring error has occured for: "+ terms[4])
+            if line != "":
 
+                terms = line.split("\t")
+                print(terms)
+                if int(terms[1]) < len(title):
+                    articleScore += 5
+                    scored = True
+                if terms[4] == "Disease":
+                    diseases = checkList(terms[3], diseases)
+                    if not scored:
+                        articleScore += 2
+                elif terms[4] == "Mutation":
+                    mutations = checkList(terms[3], mutations)
+                    if not scored:
+                        articleScore += 2
+                elif terms[4] == "Gene":
+                    gennames = checkList(terms[3], gennames)
+                    if not scored:
+                        articleScore += 1
+                else:
+                    print("A unexpected scoring error has occured for: " + terms[4])
+        except:
+            print("index out of range")
         if line == "":
-            
-            # Dict{key(str(pmid)) : tuple(str(articleScore), str(articleLink), gennames[gene], diseases[disease], mutations[mutation])) Lists may be empty.
-            articleLink = articleLink.replace("article", pmid)        
-            valueTuple = (str(articleScore), articleLink, gennames, diseases, mutations)
+            # Dict{key(str(pmid)) : tuple(str(articleScore), str(articleLink), gennames[gene], diseases[disease],
+            # mutations[mutation])) Lists may be empty.
+            articleLink = articleLink.replace("article", pmid)
+            valueTuple = (gennames, diseases, mutations, articleLink, str(articleScore))
             returnDict[pmid] = valueTuple
-            titleLine = ""
             scored = False
             articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"
             articleScore = 0
             gennames = []
             diseases = []
             mutations = []
-
+    print(returnDict)
     return returnDict
+
 
 def checkList(var, varList):
     """Checks if variable is in list, if not, appends
