@@ -50,22 +50,21 @@ def entrez_search(parameter):
 
     list_ids = record['IdList']
 
-    return pubtator_search(list_ids)
+    return pubtatorSearch(list_ids)
 
 
-def pubtator_search(list_ids):
+def pubtatorSearch(list_ids):
     """Function uses PubTator API to textmine found hits. Hits get rudimentary score.
     Input:  list[str(pmid), str(pmid)]
     Return: Dict{key(str(pmid)) : tuple(str(score), str(pubtator_link), gennames[gene], diseases[disease], mutations[mutation])) Lists may be empty.
     OR
     Return: None if input is empty or null"""
-
-    if list_ids == '' or list_ids is None:
+    
+    if list_ids == '' or list_ids == None:
         return None
 
     # Defaulting to gene, disease and mutation
-    base_url = "https://www.ncbi.nlm.nih.gov/research/pubtator-api/publications/export/pubtator?pmids={" \
-               "}&concepts=gene,disease,mutation "
+    base_url = "https://www.ncbi.nlm.nih.gov/research/pubtator-api/publications/export/pubtator?pmids={}&concepts=gene,disease,mutation"
 
     # Format IDs for PubTator
     string_ids = ""
@@ -82,64 +81,62 @@ def pubtator_search(list_ids):
     # Scores: Gene, mutation or disease in title:   +5 pts
     # Scores: Mutation or disease in abstract:      +2 pts
     # Scores: Gene in abstract                      +1 pt
-    title = []
-    scored = False
+    
     articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"
     articleScore = 0
     gennames = []
     diseases = []
     mutations = []
-    pmid = ''
     returnDict = {}
     text = res.text.split("\n")
-
+    
     for line in text:
-        try:
-            if '|t|' in line:
-                titleLine = line.split('|t|')
-                pmid = titleLine[0]
-                title = titleLine[1]
-                continue
+        scored = False
 
-            if '|a|' in line:
-                continue
+        if '|t|' in line:
+            titleLine = line.split('|t|')
+            pmid = titleLine[0]
+            title = titleLine[1]
+            continue
+        
+        if '|a|' in line:
+            continue
+        
+        if line != "":
+            # print(line.split("\t"))
+            terms = line.split("\t")
+            if int(terms[1]) < len(title):
+                articleScore += 5
+                scored = True
+            if terms[4] == "Disease":
+                diseases = checkList(terms[3], diseases)
+                if scored == False:
+                    articleScore += 2
+            elif terms[4] == "Mutation":
+                mutations = checkList(terms[3], mutations)
+                if scored == False: 
+                    articleScore += 2
+            elif terms[4] == "Gene":
+                gennames = checkList(terms[3], gennames)
+                if scored == False: 
+                    articleScore += 1
+            else:
+                print("A unexpected scoring error has occured for: "+ terms[4])
 
-            if line != "":
-
-                terms = line.split("\t")
-                print(terms)
-                if int(terms[1]) < len(title):
-                    articleScore += 5
-                    scored = True
-                if terms[4] == "Disease":
-                    diseases = checkList(terms[3], diseases)
-                    if not scored:
-                        articleScore += 2
-                elif terms[4] == "Mutation":
-                    mutations = checkList(terms[3], mutations)
-                    if not scored:
-                        articleScore += 2
-                elif terms[4] == "Gene":
-                    gennames = checkList(terms[3], gennames)
-                    if not scored:
-                        articleScore += 1
-                else:
-                    print("A unexpected scoring error has occured for: " + terms[4])
-        except:
-            print("index out of range")
         if line == "":
-            # Dict{key(str(pmid)) : tuple(str(articleScore), str(articleLink), gennames[gene], diseases[disease],
-            # mutations[mutation])) Lists may be empty.
-            articleLink = articleLink.replace("article", pmid)
-            valueTuple = (gennames, diseases, mutations, articleLink, str(articleScore))
-            returnDict[pmid] = valueTuple
-            scored = False
+            # Dict{key(str(pmid)) : tuple(str(articleScore), str(articleLink), gennames[gene], diseases[disease], mutations[mutation])) Lists may be empty.
+            articleLink = articleLink.replace("article", pmid)        
+            valueTuple = (str(articleScore), articleLink, gennames, diseases, mutations)
+            if pmid != "":
+                returnDict[pmid] = valueTuple
+            titleLine = ""
             articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"
             articleScore = 0
             gennames = []
             diseases = []
             mutations = []
-    print(returnDict)
+            pmid = ""
+
     return returnDict
 
 
