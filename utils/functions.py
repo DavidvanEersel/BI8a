@@ -15,15 +15,45 @@ def entrez_search(parameter):
     # Misschien gebruiker om een email vragen?
     # https://www.ncbi.nlm.nih.gov/dbvar/content/tools/entrez/
 
-    if parameter == "" or parameter is None:
+    keywords = parameter["keywords"]
+    genenames = parameter["gene_name"]
+    search_from = parameter["date_after"].replace("-", "/")
+
+    keyword = query_builder(keywords)
+    genename = query_builder(genenames)
+    if genename == "":
+        query = keyword
+    elif keyword == "":
+        query = genename
+    elif genename != "" and keyword == "":
+        query = keyword + " AND " + genename
+    else:
         return None
 
-    keywords = parameter["keywords"]
-    search_from = parameter["date_after"]
+    if search_from == "":
+        search_from = "1800/01/01"
+    query = query + "({}[Date - Publication]:3000/12/31[Date - Publication)".format(search_from)
     print(search_from)
+    Entrez.email = "sinbadisatwat@gmail.com"
+    info = Entrez.esearch(db='pubmed', field='tiab', term=query)
+    record = Entrez.read(info)
+    count = record["Count"]
+    print(record["IdList"])
+    print(count)
+    info.close()
+    handle = Entrez.esearch(db="pubmed", term=query, field="tiab", retmax=count)
+    record = Entrez.read(handle)
+    handle.close()
+
+    list_ids = record['IdList']
+
+    return pubtatorSearch(list_ids, count)
+
+
+def query_builder(search):
     query = ""
     or_ = False
-    for i in keywords:
+    for i in search:
         if i == '(':
             i = "("
             or_ = True
@@ -36,23 +66,7 @@ def entrez_search(parameter):
             else:
                 i = " AND "
         query = query + i
-
-    if search_from == "":
-        search_from = "1800/01/01"
-
-    Entrez.email = "sinbadisatwat@gmail.com"
-    info = Entrez.esearch(db='pubmed', term=query,mindate=search_from)
-    record = Entrez.read(info)
-    count = record["Count"]
-    print(count)
-    info.close()
-    handle = Entrez.esearch(db="pubmed", term=query, field="tiab", mindate=search_from, retmax=count)
-    record = Entrez.read(handle)
-    handle.close()
-
-    list_ids = record['IdList']
-
-    return pubtatorSearch(list_ids, count)
+    return query
 
 
 def pubtatorSearch(list_ids, count):
