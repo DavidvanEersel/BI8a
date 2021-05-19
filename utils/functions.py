@@ -2,7 +2,7 @@ import requests
 from Bio import Entrez
 
 
-def entrez_search(parameter):
+def entrez_search(parameter, genpanel):
     """Function searches PubMed for articles related to a search
     Input:  string keywords(str(term1 AND/OR term2))
             list genenames[gene1, gene2]
@@ -14,7 +14,7 @@ def entrez_search(parameter):
     # In Teams staat een advanced query voor een zoekterm
     # Misschien gebruiker om een email vragen?
     # https://www.ncbi.nlm.nih.gov/dbvar/content/tools/entrez/
-
+    panel = read_genpanel(genpanel)
     keywords = parameter["keywords"]
     genenames = parameter["gene_name"]
     search_from = parameter["date_after"].replace("-", "/")
@@ -45,7 +45,6 @@ def entrez_search(parameter):
     handle.close()
 
     list_ids = record['IdList']
-    print(list_ids)
     return pubtatorSearch(list_ids, count)
 
 
@@ -164,3 +163,7 @@ def checkList(var, varList):
     if var not in varList:
         varList.append(var)
     return varList
+
+def read_genpanel(genpanel):
+    for i in genpanel:
+        print(i)
