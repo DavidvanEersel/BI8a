@@ -157,4 +157,8 @@ a.hamburger:hover > div {
     margin-left: auto;
     height: 52px;
   }
+  li {
+    margin-bottom: 2px;
+}
+
 }

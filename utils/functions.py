@@ -14,7 +14,7 @@ def entrez_search(parameter, genpanel):
     # In Teams staat een advanced query voor een zoekterm
     # Misschien gebruiker om een email vragen?
     # https://www.ncbi.nlm.nih.gov/dbvar/content/tools/entrez/
-    panel = read_genpanel(genpanel)
+    genpanel_symbol, genpanel = read_genpanel(genpanel)
     keywords = parameter["keywords"]
     genenames = parameter["gene_name"]
     search_from = parameter["date_after"].replace("-", "/")
@@ -164,6 +164,27 @@ def checkList(var, varList):
         varList.append(var)
     return varList
 
-def read_genpanel(genpanel):
-    for i in genpanel:
-        print(i)
+
+def read_genpanel(g):
+
+    x = str(g).split('\n')
+    genpanel_symbol = []
+    genpanel = []
+    index_genpanel_symbol = 0
+    index_genpanel = 0
+
+    for i in range(len(x)):
+        temp = x[i].split('\t')
+        for j in range(len(temp)):
+            if temp[j] == "GenePanels_Symbol":
+                index_genpanel_symbol = j
+                print(j)
+            if temp[j] == "GenePanel":
+                index_genpanel = j
+                print(j)
+            if temp != ['']:
+                genpanel_symbol.append(temp[index_genpanel_symbol])
+                genpanel.append(temp[index_genpanel])
+
+    return genpanel_symbol, genpanel
+
