@@ -33,20 +33,19 @@ def entrez_search(parameter):
     if search_from == "":
         search_from = "1800/01/01"
     query = query + "({}[Date - Publication]:3000/12/31[Date - Publication)".format(search_from)
-    print(search_from)
+
     Entrez.email = "sinbadisatwat@gmail.com"
     info = Entrez.esearch(db='pubmed', field='tiab', term=query)
     record = Entrez.read(info)
     count = record["Count"]
-    print(record["IdList"])
-    print(count)
     info.close()
+
     handle = Entrez.esearch(db="pubmed", term=query, field="tiab", retmax=count)
     record = Entrez.read(handle)
     handle.close()
 
     list_ids = record['IdList']
-
+    print(list_ids)
     return pubtatorSearch(list_ids, count)
 
 

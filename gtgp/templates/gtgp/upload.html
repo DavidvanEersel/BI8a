@@ -42,10 +42,21 @@
         {% csrf_token %}
         <div class="user_input">
             <p>
-            <label for="file_upload">File upload:</label> <br/>
-            <input type="file" accept=".csv,.tsv" name="file_upload"/>
+                <label for="file_upload">File upload:</label> <br/>
+                <var id="filee">
+                    <input type="file" accept=".csv,.tsv" id="file_upload"/>
+                </var>
             </p>
             <button type="submit" name="submit">Submit</button>
+
+
+            <script>
+                var file = document.getElementById(filee)
+                fetch(file)
+                    .then(response => response.text())
+                    .then(text => console.log(text))
+            </script>
+
         </div>
     </form>
 </div>
