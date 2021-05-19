@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from utils import functions
 
 
 def index(request):
@@ -9,21 +10,22 @@ def index(request):
         text_exclude_genepanel = request.POST.get('text_exclude_genepanel')
         # TODO gene_name = none dan zoek je naar NIEUWE GENEN
         # TODO gene_name != none dan zoek je naar NIEUWE INFO OVER DE GENEN
-        parameter = {}
+
         if text_gene_name is not None:
             parameter = {"keywords": text_keywords,
                          "gene_name": text_gene_name,
                          "date_after": date_after,
                          "exclude_genepanel": text_exclude_genepanel}
-            print(parameter)
-            return render(request, 'gtgp/home.html')
+            results = functions.entrez_search(parameter)
+
+            return render(request, 'gtgp/results.html', {'results':results})
+
         elif text_gene_name is None:
             parameter = {"keywords": text_keywords,
                          "date_after": date_after,
                          "exclude_genepanel": text_exclude_genepanel}
-            print(parameter)
+            functions.entrez_search(parameter)
             return render(request, 'gtgp/home.html')
-
         else:
             return render(request, 'gtgp/home.html')
     else:
