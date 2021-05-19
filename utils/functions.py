@@ -1,5 +1,5 @@
-from Bio import Entrez
 import requests
+from Bio import Entrez
 
 
 def entrez_search(parameter):
@@ -20,19 +20,16 @@ def entrez_search(parameter):
 
     keywords = parameter["keywords"]
     search_from = parameter["date_after"]
+    print(search_from)
     query = ""
     or_ = False
     for i in keywords:
         if i == '(':
             i = "("
             or_ = True
-        else:
-            quote = True
         if i == ')':
             or_ = False
             i = ")"
-        else:
-            quote = True
         if i == ";":
             if or_ is True:
                 i = " OR "
@@ -44,7 +41,7 @@ def entrez_search(parameter):
         search_from = "1800/01/01"
 
     Entrez.email = "sinbadisatwat@gmail.com"
-    info = Entrez.esearch(db='pubmed', term=query)
+    info = Entrez.esearch(db='pubmed', term=query,mindate=search_from)
     record = Entrez.read(info)
     count = record["Count"]
     print(count)
@@ -61,11 +58,11 @@ def entrez_search(parameter):
 def pubtatorSearch(list_ids, count):
     """Function uses PubTator API to textmine found hits. Hits get rudimentary score.
     Input:  list[str(pmid), str(pmid)]
-    Return: Dict{key(str(pmid)) : tuple(str(score), str(pubtator_link), gennames[gene], diseases[disease], mutations[mutation])) Lists may be empty.
+    Return: Dict{key(str(pmid)) : tuple(gennames, diseases, mutations, articleLink, str(articleScore)) Lists may be empty.
     OR
     Return: None if input is empty or null"""
 
-    if list_ids == '' or list_ids == None:
+    if list_ids == '' or list_ids is None:
         return None
 
     # Defaulting to gene, disease and mutation
@@ -78,6 +75,7 @@ def pubtatorSearch(list_ids, count):
     mutations = []
     pmid = ""
     returnDict = {}
+
     for j in range(0, len(list_ids), 100):
         # Format IDs for PubTator
         string_ids = ""
@@ -134,7 +132,7 @@ def pubtatorSearch(list_ids, count):
             if line == "":
                 articleLink = articleLink.replace("article", pmid)
                 valueTuple = (gennames, diseases, mutations, articleLink, str(articleScore))
-                if pmid != "":
+                if pmid != "" and int(articleScore) > 0:
                     returnDict[pmid] = valueTuple
                     pmid = ''
                 articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"
@@ -142,9 +140,6 @@ def pubtatorSearch(list_ids, count):
                 gennames = []
                 diseases = []
                 mutations = []
-
-
-    print("done")
 
     return returnDict
 
