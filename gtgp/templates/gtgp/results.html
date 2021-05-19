@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="/static/gtgp/main.css"/>
+    <script
+            type="text/javascript"
+            src="/static/gtgp/functionality.js"
+    ></script>
+</head>
+<body>
+<!-- Hello there -->
+<div class="navbar">
+    <a href="" class="navbar_title navbar_spacer">GTGP</a>
+    <div class="content_spacer"></div>
+    <a
+            href="javascript:void(0);"
+            onclick="hamburger()"
+            class="hamburger"
+            name="hamburger"
+    >
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </a>
+    <div class="navbar_breaker"></div>
+    <ul class="navbar_navigator" id="hamburger_menu">
+        <li><a href="">Home</a></li>
+        <li><a href="upload.html">Upload</a></li>
+        <li><a href="manual.html">Manual</a></li>
+        <li><a href="about.html">About</a></li>
+    </ul>
+</div>
+
+<h1> Results </h1>
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 3px;
+    }
+</style>
+<table>
+    <tr>
+        <td>PMID's</td>
+        <td>Genes</td>
+        <td>Diseases</td>
+        <td>Mutations</td>
+        <td>Pubtator Link</td>
+        <td>Score</td>
+
+    </tr>
+
+    {% for key, values in results.items %}
+        <tr>
+            <td><a href="{{ values }}">{{ key }}</a></td>
+
+            {% for v in values %}
+                <td>{{ v }}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

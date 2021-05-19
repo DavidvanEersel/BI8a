@@ -134,7 +134,7 @@ def pubtatorSearch(list_ids, count):
             if line == "":
                 articleLink = articleLink.replace("article", pmid)
                 valueTuple = (gennames, diseases, mutations, articleLink, str(articleScore))
-                if pmid != "":
+                if pmid != "" and articleScore != 0:
                     returnDict[pmid] = valueTuple
                     pmid = ''
                 articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"

@@ -17,6 +17,7 @@ def index(request):
                          "date_after": date_after,
                          "exclude_genepanel": text_exclude_genepanel}
             results = functions.entrez_search(parameter)
+            results = function.sort_results(results)
 
             return render(request, 'gtgp/results.html', {'results':results})
 
