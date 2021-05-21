@@ -14,10 +14,7 @@ def entrez_search(parameter, genpanel):
     # In Teams staat een advanced query voor een zoekterm
     # Misschien gebruiker om een email vragen?
     # https://www.ncbi.nlm.nih.gov/dbvar/content/tools/entrez/
-<<<<<<< HEAD
 
-=======
->>>>>>> 2e5940c4158de4d6eb4086b1224f28cbb3600e1d
     genpanel_symbol, genpanel = read_genpanel(genpanel)
     keywords = parameter["keywords"]
     genenames = parameter["gene_name"]
@@ -71,16 +68,21 @@ def query_builder(search):
     return query
 
 
-def pubtatorSearch(list_ids, count):
+def pubtatorSearch(list_ids, keywords):
     """Function uses PubTator API to textmine found hits. Hits get rudimentary score.
     Input:  list[str(pmid), str(pmid)]
-    Return: Dict{key(str(pmid)) : tuple(gennames, diseases, mutations, articleLink, str(articleScore)) Lists may be empty.
+    Return: Dict{key(str(pmid)) : tuple(str(score), str(pubtator_link), gennames[gene], diseases[disease], mutations[mutation])) Lists may be empty.
     OR
     Return: None if input is empty or null"""
 
-    if list_ids == '' or list_ids is None:
+    if list_ids == '' or list_ids == None:
         return None
 
+    keywords = keywords.replace("(", "")
+    keywords = keywords.replace(")", "")
+    keywords = keywords.lower()
+    keywords = keywords.split(";")
+  
     # Defaulting to gene, disease and mutation
     base_url = "https://www.ncbi.nlm.nih.gov/research/pubtator-api/publications/export/pubtator?pmids={}&concepts=gene,disease,mutation"
 
@@ -91,7 +93,6 @@ def pubtatorSearch(list_ids, count):
     mutations = []
     pmid = ""
     returnDict = {}
-
     for j in range(0, len(list_ids), 100):
         # Format IDs for PubTator
         string_ids = ""
@@ -127,28 +128,32 @@ def pubtatorSearch(list_ids, count):
             if line != "":
                 terms = line.split("\t")
                 if int(terms[1]) < len(title):
-                    articleScore += 5
-                    scored = True
+                    if terms[1].lower() in keywords:
+                        articleScore += 5
+                        scored = True
                 if terms[4] == "Disease":
                     diseases = checkList(terms[3], diseases)
                     if not scored:
-                        articleScore += 2
+                        if terms[3].lower() in keywords:
+                            articleScore += 2
                 elif terms[4] == "Mutation" or terms[4] == "DNAMutation" or terms[4] == "ProteinMutation" or terms[
                     4] == "SNP":
                     mutations = checkList(terms[3], mutations)
                     if not scored:
-                        articleScore += 2
+                        if terms[3].lower() in keywords:
+                            articleScore += 2
                 elif terms[4] == "Gene":
                     gennames = checkList(terms[3], gennames)
                     if not scored:
-                        articleScore += 1
+                        if terms[3].lower() in keywords:
+                            articleScore += 1
                 else:
                     print("A unexpected scoring error has occured for: " + terms[4])
 
             if line == "":
                 articleLink = articleLink.replace("article", pmid)
                 valueTuple = (gennames, diseases, mutations, articleLink, str(articleScore))
-                if pmid != "" and int(articleScore) > 0:
+                if pmid != "" and articleScore != 0:
                     returnDict[pmid] = valueTuple
                     pmid = ''
                 articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"
@@ -156,7 +161,11 @@ def pubtatorSearch(list_ids, count):
                 gennames = []
                 diseases = []
                 mutations = []
-    returnDict = dict(sorted(returnDict.items(), key=lambda item: int(item[1][4]), reverse=True))
+
+
+    print("done")
+    print(returnDict)
+
     return returnDict
 
 
@@ -189,8 +198,4 @@ def read_genpanel(g):
                 genpanel_symbol.append(temp[index_genpanel_symbol])
                 genpanel.append(temp[index_genpanel])
 
-<<<<<<< HEAD
     return genpanel_symbol, genpanel
-=======
-    return genpanel_symbol, genpanel
->>>>>>> 2e5940c4158de4d6eb4086b1224f28cbb3600e1d
