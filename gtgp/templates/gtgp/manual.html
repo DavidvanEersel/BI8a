@@ -1,41 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="/static/gtgp/main.css" />
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="stylesheet" href="/static/gtgp/main.css"/>
     <script
-      type="text/javascript"
-      src="/static/gtgp/functionality.js"
+            type="text/javascript"
+            src="/static/gtgp/functionality.js"
     ></script>
     <title>GTGP - Manual</title>
-  </head>
-  <body>
-    <!-- Hello there -->
-    <div class="navbar">
-      <a href="" class="navbar_title navbar_spacer">GTGP</a>
-      <div class="content_spacer"></div>
-      <a
-        href="javascript:void(0);"
-        onclick="hamburger()"
-        class="hamburger"
-        name="hamburger"
-      >
+</head>
+<body>
+<!-- Hello there -->
+<div class="navbar">
+    <a href="" class="navbar_title navbar_spacer">GTGP</a>
+    <div class="content_spacer"></div>
+    <a
+            href="javascript:void(0);"
+            onclick="hamburger()"
+            class="hamburger"
+            name="hamburger"
+    >
         <div></div>
         <div></div>
         <div></div>
         <div></div>
-      </a>
-      <div class="navbar_breaker"></div>
-      <ul class="navbar_navigator" id="hamburger_menu">
+    </a>
+    <div class="navbar_breaker"></div>
+    <ul class="navbar_navigator" id="hamburger_menu">
         <li><a href="home.html">Home</a></li>
         <li><a href="upload.html">Upload</a></li>
         <li><a href="">Manual</a></li>
         <li><a href="about.html">About</a></li>
-      </ul>
-    </div>
-    <div class="text_all">
-      <h1>Manual</h1>
-      <p>Optional page</p>
-    </div>
-  </body>
+    </ul>
+</div>
+<div class="text_all">
+    <h1>Manual</h1>
+    <h2>Upload GenePanel</h2>
+    <p>
+        First you want to upload your GenePanel to the site. This can be done trough the uploadpage.<br>
+        When you push the button "Browse" you're able to browse trough your files and select your GenePanel.<br>
+        After that you the file will be displayed in the textarea above. You're able to make adjustments to file if
+        necessary.<br>
+        At last, when the file is ready to upload, press the button "Submit" and you're ready to go!
+    </p>
+    <h2>Gene Search</h2>
+    <p>
+        If you want to search, make sure you have uploaded a GenePanel file to the site.<br>
+        When you have uploaded a file to the site you can enter some searchwords to the first textarea.<br>
+        You'll have to use separators if you want to search for multiple words. This separator is ";".<br>
+        If you to look up some synonyms you can use "(" and ")".<br>
+        If you want to search for multiple words, you just place a separator(;) between the words.<br>
+        For example, you want to search for deafness. But you're not sure if the use deafness or hearingloss and you also want to search on heart failure.<br>
+        You can use this query: (deafness;hearingloss);heart failure.<br>
+        <br>
+        If you want to search for specific genes, you can use the second textarea.<br>
+        You can input the genes the same way as searching for keywords.
+        For example you want the gene ZNF or zinc finger protein and polB gene.<br>
+        You can use this query: (znf;zinc finger protein);polB.<br>
+        <br>
+        If you want to search from a specific date, you can use the third box.<br>
+        When you press it pops up a little calendar and you can select the date from where the website will search.<br>
+        <br>
+        If you want to exclude a GenPanel from the result list, you are able to do so.<br>
+        Fill in the last textarea with the GenPanel/GenPanels you want to exclude.<br>
+    </p>
+    <h2>Result page</h2>
+    <p>
+
+    </p>
+</div>
+</body>
 </html>
