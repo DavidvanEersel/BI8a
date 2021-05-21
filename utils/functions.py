@@ -153,7 +153,6 @@ def pubtatorSearch(list_ids, count):
                 diseases = []
                 mutations = []
     returnDict = dict(sorted(returnDict.items(), key=lambda item: int(item[1][4]), reverse=True))
-    print(returnDict)
     return returnDict
 
 
