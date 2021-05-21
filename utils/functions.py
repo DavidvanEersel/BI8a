@@ -2,7 +2,7 @@ from Bio import Entrez
 import requests
 
 
-def entrez_search(parameter):
+def entrez_search(parameter, count):
     """Function searches PubMed for articles related to a search
     Input:  string keywords(str(term1 AND/OR term2))
             list genenames[gene1, gene2]
@@ -55,10 +55,10 @@ def entrez_search(parameter):
 
     list_ids = record['IdList']
 
-    return pubtatorSearch(list_ids, count)
+    return pubtatorSearch(list_ids, keywords)
 
 
-def pubtatorSearch(list_ids, count):
+def pubtatorSearch(list_ids, keywords):
     """Function uses PubTator API to textmine found hits. Hits get rudimentary score.
     Input:  list[str(pmid), str(pmid)]
     Return: Dict{key(str(pmid)) : tuple(str(score), str(pubtator_link), gennames[gene], diseases[disease], mutations[mutation])) Lists may be empty.
@@ -68,6 +68,11 @@ def pubtatorSearch(list_ids, count):
     if list_ids == '' or list_ids == None:
         return None
 
+    keywords = keywords.replace("(", "")
+    keywords = keywords.replace(")", "")
+    keywords = keywords.lower()
+    keywords = keywords.split(";")
+  
     # Defaulting to gene, disease and mutation
     base_url = "https://www.ncbi.nlm.nih.gov/research/pubtator-api/publications/export/pubtator?pmids={}&concepts=gene,disease,mutation"
 
@@ -113,21 +118,25 @@ def pubtatorSearch(list_ids, count):
             if line != "":
                 terms = line.split("\t")
                 if int(terms[1]) < len(title):
-                    articleScore += 5
-                    scored = True
+                    if terms[1].lower() in keywords:
+                        articleScore += 5
+                        scored = True
                 if terms[4] == "Disease":
                     diseases = checkList(terms[3], diseases)
                     if not scored:
-                        articleScore += 2
+                        if terms[3].lower() in keywords:
+                            articleScore += 2
                 elif terms[4] == "Mutation" or terms[4] == "DNAMutation" or terms[4] == "ProteinMutation" or terms[
                     4] == "SNP":
                     mutations = checkList(terms[3], mutations)
                     if not scored:
-                        articleScore += 2
+                        if terms[3].lower() in keywords:
+                            articleScore += 2
                 elif terms[4] == "Gene":
                     gennames = checkList(terms[3], gennames)
                     if not scored:
-                        articleScore += 1
+                        if terms[3].lower() in keywords:
+                            articleScore += 1
                 else:
                     print("A unexpected scoring error has occured for: " + terms[4])
 
@@ -145,6 +154,7 @@ def pubtatorSearch(list_ids, count):
 
 
     print("done")
+    print(returnDict)
 
     return returnDict
 
