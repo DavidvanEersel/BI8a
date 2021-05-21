@@ -1,8 +1,8 @@
-import requests
 from Bio import Entrez
+import requests
 
 
-def entrez_search(parameter, genpanel):
+def entrez_search(parameter):
     """Function searches PubMed for articles related to a search
     Input:  string keywords(str(term1 AND/OR term2))
             list genenames[gene1, gene2]
@@ -13,68 +13,59 @@ def entrez_search(parameter, genpanel):
     # Must be YYYY/MM/DD OF YYYY/MM OF YYYY
     # In Teams staat een advanced query voor een zoekterm
     # Misschien gebruiker om een email vragen?
-    # https://www.ncbi.nlm.nih.gov/dbvar/content/tools/entrez/
-    genpanel_symbol, genpanel = read_genpanel(genpanel)
-    keywords = parameter["keywords"]
-    genenames = parameter["gene_name"]
-    search_from = parameter["date_after"].replace("-", "/")
+    # https://www.ncbi.nlm.nih.gov/dbvar/content/tools/entrez/"""
 
-    keyword = query_builder(keywords)
-    genename = query_builder(genenames)
-    if genename == "":
-        query = keyword
-    elif keyword == "":
-        query = genename
-    elif genename != "" and keyword == "":
-        query = keyword + " AND " + genename
-    else:
+    if parameter == "" or parameter is None:
         return None
 
-    if search_from == "":
-        search_from = "1800/01/01"
-    query = query + "({}[Date - Publication]:3000/12/31[Date - Publication)".format(search_from)
-
-    Entrez.email = "sinbadisatwat@gmail.com"
-    info = Entrez.esearch(db='pubmed', field='tiab', term=query)
-    record = Entrez.read(info)
-    count = record["Count"]
-    info.close()
-
-    handle = Entrez.esearch(db="pubmed", term=query, field="tiab", retmax=count)
-    record = Entrez.read(handle)
-    handle.close()
-
-    list_ids = record['IdList']
-    return pubtatorSearch(list_ids, count)
-
-
-def query_builder(search):
+    keywords = parameter["keywords"]
+    search_from = parameter["date_after"]
     query = ""
     or_ = False
-    for i in search:
+    for i in keywords:
         if i == '(':
             i = "("
             or_ = True
+        else:
+            quote = True
         if i == ')':
             or_ = False
             i = ")"
+        else:
+            quote = True
         if i == ";":
             if or_ is True:
                 i = " OR "
             else:
                 i = " AND "
         query = query + i
-    return query
+
+    if search_from == "":
+        search_from = "1800/01/01"
+
+    Entrez.email = "sinbadisatwat@gmail.com"
+    info = Entrez.esearch(db='pubmed', term=query)
+    record = Entrez.read(info)
+    count = record["Count"]
+    print(count)
+    info.close()
+    handle = Entrez.esearch(db="pubmed", term=query, field="tiab", mindate=search_from, retmax=count)
+    record = Entrez.read(handle)
+    handle.close()
+
+    list_ids = record['IdList']
+
+    return pubtatorSearch(list_ids, count)
 
 
 def pubtatorSearch(list_ids, count):
     """Function uses PubTator API to textmine found hits. Hits get rudimentary score.
     Input:  list[str(pmid), str(pmid)]
-    Return: Dict{key(str(pmid)) : tuple(gennames, diseases, mutations, articleLink, str(articleScore)) Lists may be empty.
+    Return: Dict{key(str(pmid)) : tuple(str(score), str(pubtator_link), gennames[gene], diseases[disease], mutations[mutation])) Lists may be empty.
     OR
     Return: None if input is empty or null"""
 
-    if list_ids == '' or list_ids is None:
+    if list_ids == '' or list_ids == None:
         return None
 
     # Defaulting to gene, disease and mutation
@@ -87,7 +78,6 @@ def pubtatorSearch(list_ids, count):
     mutations = []
     pmid = ""
     returnDict = {}
-
     for j in range(0, len(list_ids), 100):
         # Format IDs for PubTator
         string_ids = ""
@@ -144,7 +134,7 @@ def pubtatorSearch(list_ids, count):
             if line == "":
                 articleLink = articleLink.replace("article", pmid)
                 valueTuple = (gennames, diseases, mutations, articleLink, str(articleScore))
-                if pmid != "" and int(articleScore) > 0:
+                if pmid != "" and articleScore != 0:
                     returnDict[pmid] = valueTuple
                     pmid = ''
                 articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"
@@ -152,6 +142,9 @@ def pubtatorSearch(list_ids, count):
                 gennames = []
                 diseases = []
                 mutations = []
+
+
+    print("done")
 
     return returnDict
 
@@ -163,28 +156,3 @@ def checkList(var, varList):
     if var not in varList:
         varList.append(var)
     return varList
-
-
-def read_genpanel(g):
-
-    x = str(g).split('\n')
-    genpanel_symbol = []
-    genpanel = []
-    index_genpanel_symbol = 0
-    index_genpanel = 0
-
-    for i in range(len(x)):
-        temp = x[i].split('\t')
-        for j in range(len(temp)):
-            if temp[j] == "GenePanels_Symbol":
-                index_genpanel_symbol = j
-                print(j)
-            if temp[j] == "GenePanel":
-                index_genpanel = j
-                print(j)
-            if temp != ['']:
-                genpanel_symbol.append(temp[index_genpanel_symbol])
-                genpanel.append(temp[index_genpanel])
-
-    return genpanel_symbol, genpanel
-
