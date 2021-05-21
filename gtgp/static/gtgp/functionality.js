@@ -16,4 +16,5 @@ window.addEventListener('click', function (e) {
             x.className = "navbar_navigator";
         }
     }
-});
+})
+

@@ -41,10 +41,31 @@
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="user_input">
-            <p>
-            <label for="file_upload">File upload:</label> <br/>
-            <input type="file" accept=".csv,.tsv" name="file_upload"/>
-            </p>
+            <label for="editor">File:</label> <br/>
+            <textarea
+                    type="text"
+                    name="editor"
+                    id="editor"
+                    placeholder="Here will your file be displayed"
+            ></textarea><br>
+            <input type="file" id="filetoRead" accept=".csv,.tsv"/><br>
+
+            <script>
+                document.getElementById("filetoRead").addEventListener("change", function () {
+                    var file = this.files[0];
+                    if (file) {
+                        var reader = new FileReader();
+                        reader.onload = function (evt) {
+                            console.log(evt);
+                            document.getElementById("editor").value = evt.target.result;
+                        };
+                        reader.onerror = function (evt) {
+                            console.error("An error ocurred reading the file", evt);
+                        };
+                        reader.readAsText(file, "UTF-8");
+                    }
+                }, false);
+            </script>
             <button type="submit" name="submit">Submit</button>
         </div>
     </form>
