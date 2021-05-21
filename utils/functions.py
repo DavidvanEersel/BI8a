@@ -152,7 +152,8 @@ def pubtatorSearch(list_ids, count):
                 gennames = []
                 diseases = []
                 mutations = []
-
+    returnDict = dict(sorted(returnDict.items(), key=lambda item: int(item[1][4]), reverse=True))
+    print(returnDict)
     return returnDict
 
 
@@ -166,7 +167,6 @@ def checkList(var, varList):
 
 
 def read_genpanel(g):
-
     x = str(g).split('\n')
     genpanel_symbol = []
     genpanel = []
@@ -187,4 +187,3 @@ def read_genpanel(g):
                 genpanel.append(temp[index_genpanel])
 
     return genpanel_symbol, genpanel
-
