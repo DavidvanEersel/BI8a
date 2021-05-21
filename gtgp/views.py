@@ -1,5 +1,10 @@
+import json
+
 from django.shortcuts import render
+
 from utils import functions
+
+genpanel = ""
 
 
 def index(request):
@@ -16,16 +21,13 @@ def index(request):
                          "gene_name": text_gene_name,
                          "date_after": date_after,
                          "exclude_genepanel": text_exclude_genepanel}
-            results = functions.entrez_search(parameter)
-            results = function.sort_results(results)
-
-            return render(request, 'gtgp/results.html', {'results':results})
-
+            results = functions.entrez_search(parameter, genpanel)
+            return render(request, 'gtgp/results.html', {'results': results})
         elif text_gene_name is None:
             parameter = {"keywords": text_keywords,
                          "date_after": date_after,
                          "exclude_genepanel": text_exclude_genepanel}
-            functions.entrez_search(parameter)
+            functions.entrez_search(parameter, genpanel)
             return render(request, 'gtgp/home.html')
         else:
             return render(request, 'gtgp/home.html')
@@ -35,8 +37,8 @@ def index(request):
 
 def upload(request):
     if request.method == "POST":
-        test = request.POST.get("file_upload")
-        print(test)
+        global genpanel
+        genpanel = request.POST.get("editor")
     return render(request, 'gtgp/upload.html')
 
 

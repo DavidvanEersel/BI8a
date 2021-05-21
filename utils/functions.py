@@ -13,7 +13,7 @@ def entrez_search(parameter):
     # Must be YYYY/MM/DD OF YYYY/MM OF YYYY
     # In Teams staat een advanced query voor een zoekterm
     # Misschien gebruiker om een email vragen?
-    # https://www.ncbi.nlm.nih.gov/dbvar/content/tools/entrez/
+    # https://www.ncbi.nlm.nih.gov/dbvar/content/tools/entrez/"""
 
     if parameter == "" or parameter is None:
         return None
