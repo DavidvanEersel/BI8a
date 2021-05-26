@@ -21,6 +21,7 @@ def entrez_search(parameter, genpanel):
 
     keyword = query_builder(keywords)
     genename = query_builder(genenames)
+
     if genename == "":
         query = keyword
     elif keyword == "":
@@ -45,7 +46,10 @@ def entrez_search(parameter, genpanel):
     handle.close()
 
     list_ids = record['IdList']
-    return pubtatorSearch(list_ids, count)
+    if genename != "":
+        return pubtatorSearch(list_ids, count, genename)
+    else:
+        return pubtatorSearch(list_ids, count, "")
 
 
 def query_builder(search):
@@ -67,7 +71,7 @@ def query_builder(search):
     return query
 
 
-def pubtatorSearch(list_ids, count):
+def pubtatorSearch(list_ids, count, genename):
     """Function uses PubTator API to textmine found hits. Hits get rudimentary score.
     Input:  list[str(pmid), str(pmid)]
     Return: Dict{key(str(pmid)) : tuple(gennames, diseases, mutations, articleLink, str(articleScore)) Lists may be empty.
@@ -145,8 +149,13 @@ def pubtatorSearch(list_ids, count):
                 articleLink = articleLink.replace("article", pmid)
                 valueTuple = (gennames, diseases, mutations, articleLink, str(articleScore))
                 if pmid != "" and int(articleScore) > 0:
-                    returnDict[pmid] = valueTuple
-                    pmid = ''
+                    if genename != "":
+                        if genename in valueTuple:
+                            returnDict[pmid] = valueTuple
+                            pmid = ''
+                    else:
+                        returnDict[pmid] = valueTuple
+                        pmid = ''
                 articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"
                 articleScore = 0
                 gennames = []
