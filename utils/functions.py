@@ -19,17 +19,10 @@ def entrez_search(parameter, genpanel):
     genenames = parameter["gene_name"]
     search_from = parameter["date_after"].replace("-", "/")
 
-    keyword = query_builder(keywords)
+    query = query_builder(keywords)
     genename = query_builder(genenames)
 
-    if genename == "":
-        query = keyword
-    elif keyword == "":
-        query = genename
-    elif genename != "" and keyword == "":
-        query = keyword + " AND " + genename
-    else:
-        return None
+
 
     if search_from == "":
         search_from = "1800/01/01"
@@ -159,9 +152,10 @@ def pubtatorSearch(list_ids, count, genename, keywords):
                 valueTuple = (gennames, diseases, mutations, articleLink, str(articleScore))
                 if pmid != "" and int(articleScore) > 0:
                     if genename != "":
-                        if genename in valueTuple:
-                            returnDict[pmid] = valueTuple
-                            pmid = ''
+                        for gen in gennames:
+                            if gen.lower() == genename.lower():
+                                returnDict[pmid] = valueTuple
+                                pmid = ''
                     else:
                         returnDict[pmid] = valueTuple
                         pmid = ''
