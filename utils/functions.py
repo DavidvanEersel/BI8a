@@ -47,9 +47,9 @@ def entrez_search(parameter, genpanel):
 
     list_ids = record['IdList']
     if genename != "":
-        return pubtatorSearch(list_ids, count, genename)
+        return pubtatorSearch(list_ids, count, genename, keywords)
     else:
-        return pubtatorSearch(list_ids, count, "")
+        return pubtatorSearch(list_ids, count, "", keywords)
 
 
 def query_builder(search):
@@ -71,7 +71,7 @@ def query_builder(search):
     return query
 
 
-def pubtatorSearch(list_ids, count, genename):
+def pubtatorSearch(list_ids, count, genename, keywords):
     """Function uses PubTator API to textmine found hits. Hits get rudimentary score.
     Input:  list[str(pmid), str(pmid)]
     Return: Dict{key(str(pmid)) : tuple(gennames, diseases, mutations, articleLink, str(articleScore)) Lists may be empty.
@@ -80,6 +80,11 @@ def pubtatorSearch(list_ids, count, genename):
 
     if list_ids == '' or list_ids is None:
         return None
+
+    keywords = keywords.replace("(", "")
+    keywords = keywords.replace(")", "")
+    keywords = keywords.lower()
+    keywords = keywords.split(";")
 
     # Defaulting to gene, disease and mutation
     base_url = "https://www.ncbi.nlm.nih.gov/research/pubtator-api/publications/export/pubtator?pmids={}&concepts=gene,disease,mutation"
@@ -127,21 +132,25 @@ def pubtatorSearch(list_ids, count, genename):
             if line != "":
                 terms = line.split("\t")
                 if int(terms[1]) < len(title):
-                    articleScore += 5
-                    scored = True
+                    if terms[1].lower() in keywords:
+                        articleScore += 5
+                        scored = True
                 if terms[4] == "Disease":
                     diseases = checkList(terms[3], diseases)
                     if not scored:
-                        articleScore += 2
+                        if terms[3].lower() in keywords:
+                            articleScore += 2
                 elif terms[4] == "Mutation" or terms[4] == "DNAMutation" or terms[4] == "ProteinMutation" or terms[
                     4] == "SNP":
                     mutations = checkList(terms[3], mutations)
                     if not scored:
-                        articleScore += 2
+                        if terms[3].lower() in keywords:
+                            articleScore += 2
                 elif terms[4] == "Gene":
                     gennames = checkList(terms[3], gennames)
                     if not scored:
-                        articleScore += 1
+                        if terms[3].lower() in keywords:
+                            articleScore += 1
                 else:
                     print("A unexpected scoring error has occured for: " + terms[4])
 
