@@ -14,15 +14,13 @@ def entrez_search(parameter, genpanel):
     # In Teams staat een advanced query voor een zoekterm
     # Misschien gebruiker om een email vragen?
     # https://www.ncbi.nlm.nih.gov/dbvar/content/tools/entrez/
-    genpanel_symbol, genpanel = read_genpanel(genpanel)
+    genpanel_symbol, genpanel, genepanel_names = read_genpanel(genpanel)
     keywords = parameter["keywords"]
     genenames = parameter["gene_name"]
     search_from = parameter["date_after"].replace("-", "/")
 
     query = query_builder(keywords)
     genename = query_builder(genenames)
-
-
 
     if search_from == "":
         search_from = "1800/01/01"
@@ -40,9 +38,9 @@ def entrez_search(parameter, genpanel):
 
     list_ids = record['IdList']
     if genename != "":
-        return pubtatorSearch(list_ids, count, genename, keywords)
+        return pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, genepanel_names)
     else:
-        return pubtatorSearch(list_ids, count, "", keywords)
+        return pubtatorSearch(list_ids, "", keywords, genpanel_symbol, genpanel, genepanel_names)
 
 
 def query_builder(search):
@@ -64,7 +62,7 @@ def query_builder(search):
     return query
 
 
-def pubtatorSearch(list_ids, count, genename, keywords):
+def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, genepanel_names):
     """Function uses PubTator API to textmine found hits. Hits get rudimentary score.
     Input:  list[str(pmid), str(pmid)]
     Return: Dict{key(str(pmid)) : tuple(gennames, diseases, mutations, articleLink, str(articleScore)) Lists may be empty.
@@ -181,8 +179,13 @@ def read_genpanel(g):
     x = str(g).split('\n')
     genpanel_symbol = []
     genpanel = []
+    symbol_HGNC = []
+    aliases = []
+
     index_genpanel_symbol = 0
     index_genpanel = 0
+    index_aliases = 0
+    index_symbol_HGNC = 0
 
     for i in range(len(x)):
         temp = x[i].split('\t')
@@ -193,8 +196,16 @@ def read_genpanel(g):
             if temp[j] == "GenePanel":
                 index_genpanel = j
                 print(j)
+            if temp[j] == "Symbol_HGNC":
+                symbol_HGNC = j
+                print(j)
+            if temp[j] == "Aliases":
+                aliases = j
+                print(j)
             if temp != ['']:
                 genpanel_symbol.append(temp[index_genpanel_symbol])
                 genpanel.append(temp[index_genpanel])
-
-    return genpanel_symbol, genpanel
+                aliases.append(temp[index_aliases].split("|"))
+                symbol_HGNC.append(temp[index_symbol_HGNC])
+    genepanel_genes = aliases + symbol_HGNC
+    return genpanel_symbol, genpanel, genepanel_genes
