@@ -44,6 +44,10 @@ def entrez_search(parameter, genpanel):
 
 
 def query_builder(search):
+    """ Creates query accepted by EntrezSearch using keywords from webpage
+    Input: search str(content of keywords from webpage, example: 
+                                    (deaf;deafness;hearingloss);(ATP;ADP;AMP;cAMP;cyclicAMP);
+    Return: query str(query accepted by EntrezSearch)"""
     query = ""
     or_ = False
     for i in search:
@@ -64,7 +68,12 @@ def query_builder(search):
 
 def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, genepanel_names):
     """Function uses PubTator API to textmine found hits. Hits get rudimentary score.
-    Input:  list[str(pmid), str(pmid)]
+    Input:              list_ids: [str(pmid), 
+    genename:           str("single gene") #Genename submitted in gene names on website,
+    keywords:           str((deaf;deafness;hearingloss);(ATP;ADP;AMP;cAMP;cyclicAMP);) example keywords from webpage,
+    genpanel_symbol:    list[genpanel symbols]
+    genpanel:           list[genpanel] table in which genepanel symbols are in
+    genpanel_names      list[Symbol HGNC + Alias] table in from GenePanel
     Return: Dict{key(str(pmid)) : tuple(gennames, diseases, mutations, articleLink, str(articleScore)) Lists may be empty.
     OR
     Return: None if input is empty or null"""
@@ -168,8 +177,11 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
 
                     else:
                         for gen in gennames:
+                            print("Gen: "+ gen)
                             for i in range(len(genepanel_names)):
+                                print("i = "+i)
                                 if gen.lower() == genepanel_names[i].lower().split("|"):
+                                    print("True")
                                     print(genepanel_names[i].lower().split("|"))
                                     valueTuple = (
                                         gennames, diseases, mutations, articleLink, str(articleScore), genpanel[i])
@@ -202,6 +214,12 @@ def checkList(var, varList):
 
 
 def read_genpanel(g):
+    """ Reads useful data from Genpanel file contents
+    Input: g        str(content of upload page textbox)
+    Return: 
+    genpanel_symbol list[genpanel symbols] contents from genpanel tsv, 
+    genpanel        list[genpanel ] contents from genpanel tsv, 
+    symbol_HGNC     list[symbol_HGNC] contents from genpanel tsv"""
     x = str(g).split('\n')
     genpanel_symbol = []
     genpanel = []
@@ -213,6 +231,7 @@ def read_genpanel(g):
     index_aliases = 0
     index_symbol_HGNC = 0
 
+    # Gather required data from GenPanel
     for i in range(len(x)):
         temp = x[i].split('\t')
         for j in range(len(temp)):
