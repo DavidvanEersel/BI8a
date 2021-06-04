@@ -67,35 +67,36 @@ def query_builder(search):
 
 
 def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, genepanel_names):
-    """Function uses PubTator API to textmine found hits. Hits get rudimentary score.
+    """ 
+    Function uses PubTator API to textmine found hits. Hits get rudimentary score. 
+    Calls functions "split_keywords()" and "score_Generator()"
+    
     Input:              list_ids: [str(pmid), 
-    genename:           str("single gene") #Genename submitted in gene names on website,
-    keywords:           str((deaf;deafness;hearingloss);(ATP;ADP;AMP;cAMP;cyclicAMP);) example keywords from webpage,
-    genpanel_symbol:    list[genpanel symbols]
-    genpanel:           list[genpanel] table in which genepanel symbols are in
-    genpanel_names      list[Symbol HGNC + Alias] table in from GenePanel
-    Return: Dict{key(str(pmid)) : tuple(gennames, diseases, mutations, articleLink, str(articleScore)) Lists may be empty.
+        genename:           str("single gene") #Genename submitted in gene names on website,
+        keywords:           str((deaf;deafness;hearingloss);(ATP;ADP;AMP;cAMP;cyclicAMP);) example keywords from webpage,
+        genpanel_symbol:    list[genpanel symbols]
+        genpanel:           list[genpanel] table in which genepanel symbols are in
+        genpanel_names      list[Symbol HGNC + Alias] table in from GenePanel
+    
+    Return: Dict{key(str(pmid)) : tuple(gennames[], diseases[], mutations[], str(articleLink), str(articleScore), str(genpanel)) Lists may be empty.
     OR
     Return: None if input is empty or null"""
 
+    # If input empty, stop function.
     if list_ids == '' or list_ids is None:
         return None
 
-    keywords = keywords.replace("(", "")
-    keywords = keywords.replace(")", "")
-    keywords = keywords.lower()
-    keywords = keywords.split(";")
-
-    # Defaulting to gene, disease and mutation
+    # Default URL & variables
     base_url = "https://www.ncbi.nlm.nih.gov/research/pubtator-api/publications/export/pubtator?pmids={}&concepts=gene,disease,mutation"
-
     articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"
+    keywords = split_keywords(keywords)
     articleScore = 0
     gennames = []
     diseases = []
     mutations = []
     pmid = ""
     returnDict = {}
+
 
     for j in range(0, len(list_ids), 100):
         # Format IDs for PubTator
@@ -112,14 +113,11 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
         # Get page details, var.text is important here
         res = requests.get(format_url)
 
-        # Scores: Gene, mutation or disease in title:   +5 pts
-        # Scores: Mutation or disease in abstract:      +2 pts
-        # Scores: Gene in abstract                      +1 pt
-
+        
         text = res.text.split("\n")
         for line in text:
             scored = False
-
+            
             if '|t|' in line:
                 titleLine = line.split('|t|')
                 pmid = titleLine[0]
@@ -130,29 +128,7 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
                 continue
 
             if line != "":
-                terms = line.split("\t")
-                if int(terms[1]) < len(title):
-                    if terms[1].lower() in keywords:
-                        articleScore += 5
-                        scored = True
-                if terms[4] == "Disease":
-                    diseases = checkList(terms[3], diseases)
-                    if not scored:
-                        if terms[3].lower() in keywords:
-                            articleScore += 2
-                elif terms[4] == "Mutation" or terms[4] == "DNAMutation" or terms[4] == "ProteinMutation" or terms[
-                    4] == "SNP":
-                    mutations = checkList(terms[3], mutations)
-                    if not scored:
-                        if terms[3].lower() in keywords:
-                            articleScore += 2
-                elif terms[4] == "Gene":
-                    gennames = checkList(terms[3], gennames)
-                    if not scored:
-                        if terms[3].lower() in keywords:
-                            articleScore += 1
-                else:
-                    print("A unexpected scoring error has occured for: " + terms[4])
+                articleScore, gennames, mutations, diseases = score_Generator(line, title, articleScore, keywords, gennames, mutations, diseases)      
 
             if line == "":
                 articleLink = articleLink.replace("article", pmid)
@@ -203,6 +179,63 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
     returnDict = dict(sorted(returnDict.items(), key=lambda item: int(item[1][4]), reverse=True))
     return returnDict
 
+def split_keywords(keywords):
+    """ Function to split keywords and return a list of keywords for scoring
+    Input:      keywords str('(deaf;deafness;hearingloss);(ATP;ADP;AMP;cAMP;cyclicAMP);')
+    Return:     keywords list['deaf','deafness','hearingloss','ATP','ADP','AMP','cAMP','cyclicAMP']   
+    """
+    keywords = keywords.replace("(", "")
+    keywords = keywords.replace(")", "")
+    keywords = keywords.lower()
+    keywords = keywords.split(";")
+    return keywords
+
+def score_Generator(line, title, articleScore, keywords, gennames, mutations, diseases):
+    """Used by pubtatorSearch function to generate a score.
+    Input: 
+        line            str() pubtator format line, 
+        title           str() pubtator format title line, 
+        articleScore    int(numer) score for the article, 
+        keywords        list[] of keywords used to search, 
+        gennames        list[] of gennames found in the article, 
+        mutations       list[] of mutations found in the article, 
+        diseases        list[] of diseases found in the article,
+    Return:
+        articleScore    int(numer) score for the article, 
+        gennames        list[] of gennames found in the article, 
+        mutations       list[] of mutations found in the article, 
+        diseases        list[] of diseases found in the article,
+    """
+        # Scores: Gene, mutation or disease in title:   +5 pts
+        # Scores: Mutation or disease in abstract:      +2 pts
+        # Scores: Gene in abstract                      +1 pt
+
+    scored = False
+    terms = line.split("\t")
+    if int(terms[1]) < len(title):
+        if terms[1].lower() in keywords:
+            articleScore += 5
+            scored = True
+    if terms[4] == "Disease":
+        diseases = checkList(terms[3], diseases)
+        if not scored:
+            if terms[3].lower() in keywords:
+                articleScore += 2
+    elif terms[4] == "Mutation" or terms[4] == "DNAMutation" or terms[4] == "ProteinMutation" or terms[
+        4] == "SNP":
+        mutations = checkList(terms[3], mutations)
+        if not scored:
+            if terms[3].lower() in keywords:
+                articleScore += 2
+    elif terms[4] == "Gene":
+        gennames = checkList(terms[3], gennames)
+        if not scored:
+            if terms[3].lower() in keywords:
+                articleScore += 1
+    else:
+        print("A unexpected scoring error has occured for: " + terms[4])
+
+    return articleScore, gennames, mutations, diseases
 
 def checkList(var, varList):
     """Checks if variable is in list, if not, appends
