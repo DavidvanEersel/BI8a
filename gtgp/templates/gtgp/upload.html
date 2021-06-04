@@ -36,7 +36,8 @@
 <div class="text_all">
     <h1>Upload</h1>
     <h2>Gene Panel Upload</h2>
-    <p>Upload your gene panel value delimited file here.</p>
+    <p>Upload up to date GenePanel file here. This the contents must be tab separated.<br>
+    File must contain column "Symbol_HGNC", "Aliases", "GenePanels_Symbol" and "GenePanel"</p>
     <h3>Upload</h3>
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -46,7 +47,7 @@
                     type="text"
                     name="editor"
                     id="editor"
-                    placeholder="Here will your file be displayed"
+                    placeholder="File content displayed when GenePanel uploaded"
             ></textarea><br>
             <input type="file" id="filetoRead" accept=".csv,.tsv"/><br>
 
