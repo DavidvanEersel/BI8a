@@ -96,7 +96,7 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
     mutations = []
     pmid = ""
     returnDict = {}
-
+    title = ""
 
     for j in range(0, len(list_ids), 100):
         # Format IDs for PubTator
@@ -113,61 +113,46 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
         # Get page details, var.text is important here
         res = requests.get(format_url)
 
-        
         text = res.text.split("\n")
         for line in text:
-            scored = False
-            
+
             if '|t|' in line:
                 titleLine = line.split('|t|')
                 pmid = titleLine[0]
                 title = titleLine[1]
                 continue
 
-            if '|a|' in line:
+            elif '|a|' in line:
                 continue
 
-            if line != "":
-                articleScore, gennames, mutations, diseases = score_Generator(line, title, articleScore, keywords, gennames, mutations, diseases)      
+            elif line != "":
+                articleScore, gennames, mutations, diseases = score_Generator(line, title, articleScore, keywords,
+                                                                              gennames, mutations, diseases)
 
-            if line == "":
-                articleLink = articleLink.replace("article", pmid)
+
+            elif line == "":
                 if pmid != "" and int(articleScore) > 0:
-                    temp = True
                     if genename != "":
                         for gen in gennames:
                             if gen.lower() == genename.lower():
-                                for i in range(len(genepanel_names)):
-                                    if gen.lower() in genepanel_names[i].lower():
+                                for keys, values in genepanel_names.items():
+                                    if genename in values:
                                         valueTuple = (
-                                            gennames, diseases, mutations, articleLink, str(articleScore), genpanel[i])
+                                            gennames, diseases, mutations, articleLink, str(articleScore), keys)
                                         returnDict[pmid] = valueTuple
                                         pmid = ''
-                                    else:
-                                        if temp:
-                                            temp = False
-                                            valueTuple = (
-                                                gennames, diseases, mutations, articleLink, str(articleScore), "-")
-                                            returnDict[pmid] = valueTuple
-                                            pmid = ''
 
                     else:
                         for gen in gennames:
-                            print("Gen: "+ gen)
-                            for i in range(len(genepanel_names)):
-                                print("i = "+i)
-                                if gen.lower() == genepanel_names[i].lower().split("|"):
-                                    print("True")
-                                    print(genepanel_names[i].lower().split("|"))
+                            for keys, values in genepanel_names.items():
+                                if gen in values:
                                     valueTuple = (
-                                        gennames, diseases, mutations, articleLink, str(articleScore), genpanel[i])
+                                        gennames, diseases, mutations, articleLink, str(articleScore), keys)
                                     returnDict[pmid] = valueTuple
                                     pmid = ''
-
                                 else:
-                                    if temp:
-                                        temp = False
-                                    valueTuple = (gennames, diseases, mutations, articleLink, str(articleScore), "-")
+                                    valueTuple = (
+                                        gennames, diseases, mutations, articleLink, str(articleScore))
                                     returnDict[pmid] = valueTuple
                                     pmid = ''
 
@@ -179,6 +164,7 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
     returnDict = dict(sorted(returnDict.items(), key=lambda item: int(item[1][4]), reverse=True))
     return returnDict
 
+
 def split_keywords(keywords):
     """ Function to split keywords and return a list of keywords for scoring
     Input:      keywords str('(deaf;deafness;hearingloss);(ATP;ADP;AMP;cAMP;cyclicAMP);')
@@ -189,6 +175,7 @@ def split_keywords(keywords):
     keywords = keywords.lower()
     keywords = keywords.split(";")
     return keywords
+
 
 def score_Generator(line, title, articleScore, keywords, gennames, mutations, diseases):
     """Used by pubtatorSearch function to generate a score.
@@ -206,9 +193,9 @@ def score_Generator(line, title, articleScore, keywords, gennames, mutations, di
         mutations       list[] of mutations found in the article, 
         diseases        list[] of diseases found in the article,
     """
-        # Scores: Gene, mutation or disease in title:   +5 pts
-        # Scores: Mutation or disease in abstract:      +2 pts
-        # Scores: Gene in abstract                      +1 pt
+    # Scores: Gene, mutation or disease in title:   +5 pts
+    # Scores: Mutation or disease in abstract:      +2 pts
+    # Scores: Gene in abstract                      +1 pt
 
     scored = False
     terms = line.split("\t")
@@ -237,6 +224,7 @@ def score_Generator(line, title, articleScore, keywords, gennames, mutations, di
 
     return articleScore, gennames, mutations, diseases
 
+
 def checkList(var, varList):
     """Checks if variable is in list, if not, appends
     Input: str(var), varlist[var]
@@ -264,12 +252,12 @@ def read_genpanel(g):
     index_aliases = 0
     index_symbol_HGNC = 0
 
+    dict ={}
+
     # Gather required data from GenPanel
     for i in range(len(x)):
         temp = x[i].split('\t')
         for j in range(len(temp)):
-            if temp[j] == "GenePanels_Symbol":
-                index_genpanel_symbol = j
             if temp[j] == "GenePanel":
                 index_genpanel = j
             if temp[j] == "Symbol_HGNC":
@@ -277,9 +265,6 @@ def read_genpanel(g):
             if temp[j] == "Aliases":
                 index_aliases = j
             if temp != ['']:
-                genpanel_symbol.append(temp[index_genpanel_symbol])
-                genpanel.append(temp[index_genpanel])
-                aliases.append(temp[index_aliases])
-                symbol_HGNC.append(temp[index_symbol_HGNC])
+                dict[temp[index_genpanel]] = [temp[index_symbol_HGNC]] +  temp[index_aliases].split("|")
 
-    return genpanel_symbol, genpanel, symbol_HGNC
+    return genpanel_symbol, genpanel, dict
