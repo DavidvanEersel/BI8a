@@ -8,8 +8,7 @@ def entrez_search(parameter, genpanel):
             list genenames[gene1, gene2]
             string search_from(str date example(2020/06/12))
     Return: list[pmid's]
-    OR 
-    Return: None if input is empty or null"""
+    """
     # Must be YYYY/MM/DD OF YYYY/MM OF YYYY
     # In Teams staat een advanced query voor een zoekterm
     # Misschien gebruiker om een email vragen?
