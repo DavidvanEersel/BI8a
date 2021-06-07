@@ -143,18 +143,21 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
                                         pmid = ''
 
                     else:
+                        genpanel_name = ''
                         for gen in gennames:
                             for keys, values in genepanel_names.items():
                                 if gen in values:
-                                    valueTuple = (
-                                        gennames, diseases, mutations, articleLink, str(articleScore), keys)
-                                    returnDict[pmid] = valueTuple
-                                    pmid = ''
-                                else:
-                                    valueTuple = (
-                                        gennames, diseases, mutations, articleLink, str(articleScore))
-                                    returnDict[pmid] = valueTuple
-                                    pmid = ''
+                                    genpanel_name=keys
+                        if genpanel_name != '':
+                            valueTuple = (
+                                gennames, diseases, mutations, articleLink, str(articleScore), genpanel_name)
+                            returnDict[pmid] = valueTuple
+                            pmid = ''
+                        else:
+                            valueTuple = (
+                                gennames, diseases, mutations, articleLink, str(articleScore))
+                            returnDict[pmid] = valueTuple
+                            pmid = ''
 
                 articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"
                 articleScore = 0
