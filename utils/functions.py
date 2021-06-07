@@ -115,7 +115,7 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
 
         text = res.text.split("\n")
         for line in text:
-
+            print(line)
             if '|t|' in line:
                 titleLine = line.split('|t|')
                 pmid = titleLine[0]
@@ -265,6 +265,6 @@ def read_genpanel(g):
             if temp[j] == "Aliases":
                 index_aliases = j
             if temp != ['']:
-                dict[temp[index_genpanel]] = [temp[index_symbol_HGNC]] +  temp[index_aliases].split("|")
-
+                dict[temp[index_genpanel]] = [temp[index_symbol_HGNC]] + temp[index_aliases].split("|")
+    print
     return genpanel_symbol, genpanel, dict
