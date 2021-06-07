@@ -115,7 +115,7 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
 
         text = res.text.split("\n")
         for line in text:
-            print(line)
+
             if '|t|' in line:
                 titleLine = line.split('|t|')
                 pmid = titleLine[0]
@@ -143,18 +143,21 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
                                         pmid = ''
 
                     else:
+                        genpanel_name = ''
                         for gen in gennames:
                             for keys, values in genepanel_names.items():
                                 if gen in values:
-                                    valueTuple = (
-                                        gennames, diseases, mutations, articleLink, str(articleScore), keys)
-                                    returnDict[pmid] = valueTuple
-                                    pmid = ''
-                                else:
-                                    valueTuple = (
-                                        gennames, diseases, mutations, articleLink, str(articleScore))
-                                    returnDict[pmid] = valueTuple
-                                    pmid = ''
+                                    genpanel_name=keys
+                        if genpanel_name != '':
+                            valueTuple = (
+                                gennames, diseases, mutations, articleLink, str(articleScore), genpanel_name)
+                            returnDict[pmid] = valueTuple
+                            pmid = ''
+                        else:
+                            valueTuple = (
+                                gennames, diseases, mutations, articleLink, str(articleScore))
+                            returnDict[pmid] = valueTuple
+                            pmid = ''
 
                 articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"
                 articleScore = 0
@@ -265,6 +268,6 @@ def read_genpanel(g):
             if temp[j] == "Aliases":
                 index_aliases = j
             if temp != ['']:
-                dict[temp[index_genpanel]] = [temp[index_symbol_HGNC]] + temp[index_aliases].split("|")
-    print
+                dict[temp[index_genpanel]] = [temp[index_symbol_HGNC]] +  temp[index_aliases].split("|")
+
     return genpanel_symbol, genpanel, dict
