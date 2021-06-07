@@ -134,10 +134,10 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
                 if pmid != "" and int(articleScore) > 0:
                     if genename != "":
                         for gen in gennames:
-                            if gen.lower() == genename.lower():
+                            if gen.upper() == genename.upper():
                                 for keys, values in genepanel_names.items():
-                                    if genename in values:
-                                        genpanel_name = keys
+                                    if genename in values[0]:
+                                        genpanel_name = values[1]
                                 if genpanel_name != '':
                                     valueTuple = (
                                         gennames, diseases, mutations, articleLink, str(articleScore),
@@ -153,9 +153,8 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
                     else:
                         for gen in gennames:
                             for keys, values in genepanel_names.items():
-                                if gen in values:
-                                    genpanel_name = keys
-                                    print(values)
+                                if gen in values[0]:
+                                    genpanel_name = values[1]
                         if genpanel_name != '':
                             valueTuple = (
                                 gennames, diseases, mutations, articleLink, str(articleScore), genpanel_name)
@@ -258,7 +257,7 @@ def read_genpanel(g):
     symbol_HGNC = []
     aliases = []
 
-    index_genpanel_symbol = 0
+    index_id = 0
     index_genpanel = 0
     index_aliases = 0
     index_symbol_HGNC = 0
@@ -275,7 +274,13 @@ def read_genpanel(g):
                 index_symbol_HGNC = j
             if temp[j] == "Aliases":
                 index_aliases = j
+            if temp[j] == "GeneID_NCBI":
+                index_id = j
             if temp != ['']:
-                dict[temp[index_genpanel]] = [temp[index_symbol_HGNC]] + temp[index_aliases].split("|")
+                dict[temp[index_id]] = [temp[index_symbol_HGNC]] + temp[index_aliases].split("|"), temp[index_genpanel]
+    for keys, values in dict.items():
+        print(values)
+        if "TRMU" in values:
+            print(keys)
 
     return genpanel_symbol, genpanel, dict
