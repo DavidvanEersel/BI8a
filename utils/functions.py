@@ -129,25 +129,33 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
                 articleScore, gennames, mutations, diseases = score_Generator(line, title, articleScore, keywords,
                                                                               gennames, mutations, diseases)
 
-
             elif line == "":
+                genpanel_name = ''
                 if pmid != "" and int(articleScore) > 0:
                     if genename != "":
                         for gen in gennames:
                             if gen.lower() == genename.lower():
                                 for keys, values in genepanel_names.items():
                                     if genename in values:
-                                        valueTuple = (
-                                            gennames, diseases, mutations, articleLink, str(articleScore), keys)
-                                        returnDict[pmid] = valueTuple
-                                        pmid = ''
+                                        genpanel_name = keys
+                                if genpanel_name != '':
+                                    valueTuple = (
+                                        gennames, diseases, mutations, articleLink, str(articleScore),
+                                        genpanel_name)
+                                    returnDict[pmid] = valueTuple
+                                    pmid = ''
+                                else:
+                                    valueTuple = (
+                                        gennames, diseases, mutations, articleLink, str(articleScore))
+                                    returnDict[pmid] = valueTuple
+                                    pmid = ''
 
                     else:
-                        genpanel_name = ''
                         for gen in gennames:
                             for keys, values in genepanel_names.items():
                                 if gen in values:
                                     genpanel_name=keys
+                                    print(genpanel_name)
                         if genpanel_name != '':
                             valueTuple = (
                                 gennames, diseases, mutations, articleLink, str(articleScore), genpanel_name)
