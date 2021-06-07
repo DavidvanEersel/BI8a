@@ -9,7 +9,7 @@ def entrez_search(parameter, genpanel):
             string search_from(str date example(2020/06/12))
     Return: list[pmid's]
     OR 
-    Return: None if input is empty or null"""
+   """
     # Must be YYYY/MM/DD OF YYYY/MM OF YYYY
     # In Teams staat een advanced query voor een zoekterm
     # Misschien gebruiker om een email vragen?
@@ -115,24 +115,26 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
 
         text = res.text.split("\n")
         for line in text:
-
+            print(line)
             if '|t|' in line:
                 titleLine = line.split('|t|')
                 pmid = titleLine[0]
                 title = titleLine[1]
                 continue
 
-            elif '|a|' in line:
+            if '|a|' in line:
                 continue
 
-            elif line != "":
+            if line != "":
                 articleScore, gennames, mutations, diseases = score_Generator(line, title, articleScore, keywords,
                                                                               gennames, mutations, diseases)
 
-            elif line == "":
-                genpanel_name = ''
+
+            if line == "":
+                print("lala")
                 if pmid != "" and int(articleScore) > 0:
                     if genename != "":
+                        genpanel_name = ''
                         for gen in gennames:
                             if gen.lower() == genename.lower():
                                 for keys, values in genepanel_names.items():
@@ -151,10 +153,12 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
                                     pmid = ''
 
                     else:
+                        genpanel_name = ''
+                        print("lala")
                         for gen in gennames:
                             for keys, values in genepanel_names.items():
                                 if gen in values:
-                                    genpanel_name=keys
+                                    genpanel_name = keys
                                     print(genpanel_name)
                         if genpanel_name != '':
                             valueTuple = (
@@ -263,7 +267,7 @@ def read_genpanel(g):
     index_aliases = 0
     index_symbol_HGNC = 0
 
-    dict ={}
+    dict = {}
 
     # Gather required data from GenPanel
     for i in range(len(x)):
@@ -276,6 +280,6 @@ def read_genpanel(g):
             if temp[j] == "Aliases":
                 index_aliases = j
             if temp != ['']:
-                dict[temp[index_genpanel]] = [temp[index_symbol_HGNC]] +  temp[index_aliases].split("|")
+                dict[temp[index_genpanel]] = [temp[index_symbol_HGNC]] + temp[index_aliases].split("|")
 
     return genpanel_symbol, genpanel, dict
