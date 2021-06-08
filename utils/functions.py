@@ -148,19 +148,22 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
                             if gen.upper() == genename.upper():
                                 for keys, values in genepanel_names.items():
                                     if genename in values[0]:
-                                        regex = ".*{}.*".format(given_gpanel)
-                                        if re.search(regex, values[1]):
-                                            temp_g_var = True
-                                            genpanel_name = values[1]
+                                        if given_gpanel != "":
+                                            regex = ".*{}.*".format(given_gpanel)
+                                            if re.search(regex, values[1]):
+                                                temp_g_var = True
+                                                genpanel_name = values[1]
+                                            else:
+                                                genpanel_name = values[1]
                                         else:
                                             genpanel_name = values[1]
-                                if genpanel_name != '' and not temp_g_var:
+                                if genpanel_name != '' and temp_g_var == False:
                                     valueTuple = (
                                         gennames, diseases, mutations, articleLink, str(articleScore),
                                         genpanel_name)
                                     returnDict[pmid] = valueTuple
                                     pmid = ''
-                                elif genpanel_name == '' and not temp_g_var:
+                                elif genpanel_name == '' and temp_g_var == False:
                                     valueTuple = (
                                         gennames, diseases, mutations, articleLink, str(articleScore))
                                     returnDict[pmid] = valueTuple
@@ -170,18 +173,21 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
                         for gen in gennames:
                             for keys, values in genepanel_names.items():
                                 if gen in values[0]:
-                                    regex = ".*{}.*".format(given_gpanel)
-                                    if re.search(regex, values[1]):
-                                        temp_g_var = True
-                                        genpanel_name = values[1]
+                                    if given_gpanel != "":
+                                        regex = ".*{}.*".format(given_gpanel)
+                                        if re.search(regex, values[1]):
+                                            temp_g_var = True
+                                            genpanel_name = values[1]
+                                        else:
+                                            genpanel_name = values[1]
                                     else:
                                         genpanel_name = values[1]
-                        if genpanel_name != '' and not temp_g_var:
+                        if genpanel_name != '' and temp_g_var == False:
                             valueTuple = (
                                 gennames, diseases, mutations, articleLink, str(articleScore), genpanel_name)
                             returnDict[pmid] = valueTuple
                             pmid = ''
-                        elif genpanel_name == '' and not temp_g_var:
+                        elif genpanel_name == '' and temp_g_var == False:
                             valueTuple = (
                                 gennames, diseases, mutations, articleLink, str(articleScore))
                             returnDict[pmid] = valueTuple
