@@ -1,3 +1,5 @@
+import re
+
 import requests
 from Bio import Entrez
 
@@ -17,6 +19,7 @@ def entrez_search(parameter, genpanel):
     keywords = parameter["keywords"]
     genenames = parameter["gene_name"]
     search_from = parameter["date_after"].replace("-", "/")
+    given_gpanel = parameter["exclude_genepanel"]
 
     query = query_builder(keywords)
     genename = query_builder(genenames)
@@ -37,9 +40,9 @@ def entrez_search(parameter, genpanel):
 
     list_ids = record['IdList']
     if genename != "":
-        return pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, genepanel_names)
+        return pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, genepanel_names, given_gpanel)
     else:
-        return pubtatorSearch(list_ids, "", keywords, genpanel_symbol, genpanel, genepanel_names)
+        return pubtatorSearch(list_ids, "", keywords, genpanel_symbol, genpanel, genepanel_names, given_gpanel)
 
 
 def query_builder(search):
@@ -65,7 +68,7 @@ def query_builder(search):
     return query
 
 
-def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, genepanel_names):
+def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, genepanel_names, given_gpanel):
     """
     Function uses PubTator API to textmine found hits. Hits get rudimentary score.
     Calls functions "split_keywords()" and "score_Generator()"
@@ -129,6 +132,7 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
                                                                               gennames, mutations, diseases)
 
             elif line == "":
+                temp_g_var = False
                 articleLink = articleLink.replace("article", pmid)
                 genpanel_name = ''
                 if pmid != "" and int(articleScore) > 0:
@@ -137,14 +141,19 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
                             if gen.upper() == genename.upper():
                                 for keys, values in genepanel_names.items():
                                     if genename in values[0]:
-                                        genpanel_name = values[1]
-                                if genpanel_name != '':
+                                        regex = ".*{}.*".format(given_gpanel)
+                                        if re.search(regex, values[1]):
+                                            temp_g_var = True
+                                            genpanel_name = values[1]
+                                        else:
+                                            genpanel_name = values[1]
+                                if genpanel_name != '' and not temp_g_var:
                                     valueTuple = (
                                         gennames, diseases, mutations, articleLink, str(articleScore),
                                         genpanel_name)
                                     returnDict[pmid] = valueTuple
                                     pmid = ''
-                                else:
+                                elif genpanel_name == '' and not temp_g_var:
                                     valueTuple = (
                                         gennames, diseases, mutations, articleLink, str(articleScore))
                                     returnDict[pmid] = valueTuple
@@ -154,13 +163,18 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
                         for gen in gennames:
                             for keys, values in genepanel_names.items():
                                 if gen in values[0]:
-                                    genpanel_name = values[1]
-                        if genpanel_name != '':
+                                    regex = ".*{}.*".format(given_gpanel)
+                                    if re.search(regex, values[1]):
+                                        temp_g_var = True
+                                        genpanel_name = values[1]
+                                    else:
+                                        genpanel_name = values[1]
+                        if genpanel_name != '' and not temp_g_var:
                             valueTuple = (
                                 gennames, diseases, mutations, articleLink, str(articleScore), genpanel_name)
                             returnDict[pmid] = valueTuple
                             pmid = ''
-                        else:
+                        elif genpanel_name == '' and not temp_g_var:
                             valueTuple = (
                                 gennames, diseases, mutations, articleLink, str(articleScore))
                             returnDict[pmid] = valueTuple
@@ -278,9 +292,5 @@ def read_genpanel(g):
                 index_id = j
             if temp != ['']:
                 dict[temp[index_id]] = [temp[index_symbol_HGNC]] + temp[index_aliases].split("|"), temp[index_genpanel]
-    for keys, values in dict.items():
-        print(values)
-        if "TRMU" in values:
-            print(keys)
 
     return genpanel_symbol, genpanel, dict
