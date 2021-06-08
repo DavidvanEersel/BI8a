@@ -1,20 +1,22 @@
-import json
+# Made by David van Eersel & Dominic Hildebrand
+# June, 2021
 
 from django.shortcuts import render
-
 from utils import functions
-
 genpanel = ""
 
 
 def index(request):
+    """Function renders home page & result page, based on web input
+    Input: web request
+    Return: Renders home.html
+    OR
+    Return: Renders results.html with results"""
     if request.method == 'POST':
         text_keywords = request.POST.get('text_keywords')
         text_gene_name = request.POST.get('text_gene_name')
         date_after = request.POST.get('date_after')
         text_exclude_genepanel = request.POST.get('text_exclude_genepanel')
-        # TODO gene_name = none dan zoek je naar NIEUWE GENEN
-        # TODO gene_name != none dan zoek je naar NIEUWE INFO OVER DE GENEN
 
         if text_gene_name is not None:
             parameter = {"keywords": text_keywords,
@@ -36,6 +38,9 @@ def index(request):
 
 
 def upload(request):
+    """Function renders upload page, changes global genpanel
+    Input: web request
+    Return: renders webpage upload.html"""
     if request.method == "POST":
         global genpanel
         genpanel = request.POST.get("editor")
@@ -43,9 +48,14 @@ def upload(request):
 
 
 def manual(request):
+    """Function renders manual page
+    Input: Web request
+    Return: renders manual.html"""
     return render(request, 'gtgp/manual.html')
 
 
 def about(request):
+    """Function renders about page
+    Input: Web request
+    Return: renders about.html"""
     return render(request, 'gtgp/about.html')
-# Create your views here.

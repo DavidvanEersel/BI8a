@@ -1,3 +1,5 @@
+# Made by David van Eersel & Dominic Hildebrand
+# June, 2021
 import re
 
 import requests
@@ -5,11 +7,15 @@ from Bio import Entrez
 
 
 def entrez_search(parameter, genpanel):
-    """Function searches PubMed for articles related to a search
+    """Function searches PubMed for articles related to a search. Calls query_builder()
+    Calls pubtatorSearch(), which is returned.
     Input:  string keywords(str(term1 AND/OR term2))
             list genenames[gene1, gene2]
             string search_from(str date example(2020/06/12))
-    Return: list[pmid's]
+    Return: Dict{key(str(pmid)) : tuple(gennames[], diseases[], mutations[], 
+    str(articleLink), str(articleScore), str(genpanel))}. Lists may be empty.
+    OR
+    Return: None
     """
     # Must be YYYY/MM/DD OF YYYY/MM OF YYYY
     # In Teams staat een advanced query voor een zoekterm
@@ -107,7 +113,7 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
             for i in range(100):
                 string_ids += list_ids[j + i] + ','
         except IndexError:
-            print("laatste aantal")
+            print("last group")
         # Remove last comma delimiter
         string_ids = string_ids[:-1]
         format_url = base_url.format(string_ids)
@@ -130,7 +136,8 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
             elif line != "":
                 articleScore, gennames, mutations, diseases = score_Generator(line, title, articleScore, keywords,
                                                                               gennames, mutations, diseases)
-
+            
+            # If / Else / For structure used to match genpanel to found hits if any and append returnDict.
             elif line == "":
                 temp_g_var = False
                 articleLink = articleLink.replace("article", pmid)
@@ -179,12 +186,13 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
                                 gennames, diseases, mutations, articleLink, str(articleScore))
                             returnDict[pmid] = valueTuple
                             pmid = ''
-
+                
                 articleLink = "https://www.ncbi.nlm.nih.gov/research/pubtator/?view=docsum&query=article"
                 articleScore = 0
                 gennames = []
                 diseases = []
                 mutations = []
+    # Orders dict for sorted scores, python dicts are sortable
     returnDict = dict(sorted(returnDict.items(), key=lambda item: int(item[1][4]), reverse=True))
     return returnDict
 
@@ -217,6 +225,7 @@ def score_Generator(line, title, articleScore, keywords, gennames, mutations, di
         mutations       list[] of mutations found in the article,
         diseases        list[] of diseases found in the article,
     """
+    # Scores: Only adds score if hit is a keyword.
     # Scores: Gene, mutation or disease in title:   +5 pts
     # Scores: Mutation or disease in abstract:      +2 pts
     # Scores: Gene in abstract                      +1 pt
@@ -264,7 +273,7 @@ def read_genpanel(g):
     Return:
     genpanel_symbol list[genpanel symbols] contents from genpanel tsv,
     genpanel        list[genpanel ] contents from genpanel tsv,
-    symbol_HGNC     list[symbol_HGNC] contents from genpanel tsv"""
+    dict            dict{id : HGNC symbol + known aliases + genpanel}"""
     x = str(g).split('\n')
     genpanel_symbol = []
     genpanel = []
@@ -278,7 +287,7 @@ def read_genpanel(g):
 
     dict = {}
 
-    # Gather required data from GenPanel
+    # Gather required data from GenPanel using correct columns
     for i in range(len(x)):
         temp = x[i].split('\t')
         for j in range(len(temp)):
