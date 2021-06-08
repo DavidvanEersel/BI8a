@@ -153,11 +153,11 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
                                             regex = ".*{}.*".format(given_gpanel)
                                             if re.search(regex, values[1]):
                                                 temp_g_var = True
-                                                genpanel_name = values[1]
+                                                genpanel_name += values[1]
                                             else:
-                                                genpanel_name = values[1]
+                                                genpanel_name += values[1]
                                         else:
-                                            genpanel_name = values[1]
+                                            genpanel_name += values[1]
                                 if genpanel_name != '' and temp_g_var == False:
                                     valueTuple = (
                                         gennames, diseases, mutations, articleLink, str(articleScore),
@@ -178,11 +178,11 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
                                         regex = ".*{}.*".format(given_gpanel)
                                         if re.search(regex, values[1]):
                                             temp_g_var = True
-                                            genpanel_name = values[1]
+                                            genpanel_name += values[1]
                                         else:
-                                            genpanel_name = values[1]
+                                            genpanel_name += values[1]
                                     else:
-                                        genpanel_name = values[1]
+                                        genpanel_name += values[1]
                         if genpanel_name != '' and temp_g_var == False:
                             valueTuple = (
                                 gennames, diseases, mutations, articleLink, str(articleScore), genpanel_name)
