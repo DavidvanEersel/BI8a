@@ -84,7 +84,8 @@ def pubtatorSearch(list_ids, genename, keywords, genpanel_symbol, genpanel, gene
         keywords:           str((deaf;deafness;hearingloss);(ATP;ADP;AMP;cAMP;cyclicAMP);) example keywords from webpage,
         genpanel_symbol:    list[genpanel symbols]
         genpanel:           list[genpanel] table in which genepanel symbols are in
-        genpanel_names      list[Symbol HGNC + Alias] table in from GenePanel
+        genpanel_names:     list[Symbol HGNC + Alias] table in from GenePanel
+        given_gpanel:       str(genpanel), can be empty
 
     Return: Dict{key(str(pmid)) : tuple(gennames[], diseases[], mutations[], str(articleLink), str(articleScore), str(genpanel)) Lists may be empty.
     OR
