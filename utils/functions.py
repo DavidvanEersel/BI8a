@@ -17,10 +17,7 @@ def entrez_search(parameter, genpanel):
     OR
     Return: None
     """
-    # Must be YYYY/MM/DD OF YYYY/MM OF YYYY
-    # In Teams staat een advanced query voor een zoekterm
-    # Misschien gebruiker om een email vragen?
-    # https://www.ncbi.nlm.nih.gov/dbvar/content/tools/entrez/
+    
     genpanel_symbol, genpanel, genepanel_names = read_genpanel(genpanel)
     keywords = parameter["keywords"]
     genenames = parameter["gene_name"]
