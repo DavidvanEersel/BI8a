@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}GTGP - Results{% endblock title%}
+{% block content %}
+
+<h1> Results </h1>
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 3px;
+    }
+</style>
+<table>
+    <tr>
+        <td>PMID's</td>
+        <td>Genes</td>
+        <td>Diseases</td>
+        <td>Mutations</td>
+        <td>Score</td>
+        <td>Genpanel</td>
+
+    </tr>
+
+    {% for key, values in results.items %}
+        <tr>
+        <td><a href="{{ values.3 }}">{{ key }}</a></td>
+        <td>
+            {% for v1 in values.0 %}
+                <ul style="margin-bottom: 0; margin-top: 0;">
+                    <li>{{ v1 }}</li>
+                </ul>
+            {% endfor %}
+        </td>
+        <td>
+            {% for v1 in values.1 %}
+                <ul style="margin-bottom: 0; margin-top: 0;">
+                    <li>{{ v1 }}</li>
+                </ul>
+            {% endfor %}
+        </td>
+        <td>
+            {% for v1 in values.2 %}
+                <ul style="margin-bottom: 0; margin-top: 0;">
+                    <li>{{ v1 }}</li>
+                </ul>
+            {% endfor %}
+        </td>
+        <td>{{ values.4 }}</td>
+        <td>{{ values.5 }}</td>
+    {% endfor %}
+    </tr>
+
+</table>
+
+{% endblock content %}

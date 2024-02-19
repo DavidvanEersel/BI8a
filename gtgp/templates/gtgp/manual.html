@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}GTGP - Manual{% endblock title%}
+{% block content %}
+
+<div class="text_all">
+    <h1>Manual</h1>
+</div>
+<div class="accordion" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Upload GenePanel manual
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+            For uploading a newer version of GenePanel up to the website, one has to browse to the "Upload" page through the browsing menu.<br> 
+            When arriving at the "Upload" page, one must prepare a <strong>tab separated Tab Separated Value (.tsv)file containing the columns "Symbol_HGNC", "Aliases", "GenePanels_Symbol" and "GenePanel"</strong>.<br>
+            The user can give the data to the browser by either pasting the contents of the .tsv file in the "File" box or by clicking "Browse" and selecting the .tsv file.<br>
+            When the user uploaded the data or pasted the data in the textbox, the user can resize the textbox by dragging on the bottom right part of the textbox, so the user can check the data.<br>
+            After having uploaded the .tsv file or pasting it in the text box, the user clicks "Submit".<br>
+            Now the web application knows the GenePanel data and is ready to use the GenePanel data.<br>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingTwo">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Gene Search manual
+        </button>
+      </h2>
+      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+            Before making a search, <strong>is strongly advised to have an up-to-date GenePanel uploaded to the website</strong>, instructions in "Upload GenePanel manual".<br>
+            <br>
+            To search PubMed, <strong> type the keywords in the 'keywords' textbox.</strong> This textbox can be resized by dragging on the bottom right part of the textbox. .<br>
+            The query has to be written in a specific way. <strong>Every keyword has to be separated with the separator symbol, the semicolon (";").</strong> <br>
+            If the user wishes to make 'and' statements, the user simply has to place a semicolon (;) behind each keyword. Spacebars are not required in between.<br>
+            Would the user wish to make 'or' statements, the user has to <strong>place the or fields between brackets "(" and ")".</strong><br>
+            An example query would be: "<strong>(deaf;deafness;hearingloss);(ATP;ADP;AMP;cAMP;cyclicAMP);</strong>".<br>
+            In this example, the web application will search for articles containing deaf, deafness, or hearling loss and ATP, ADP, AMP, cAMP or cyclicAMP.<br>
+            <br>
+            Furthermore, the user has the option to search for a specific gene, which can be done by using the second textfield "Gene names".<br>
+            For example, the user can enter the gene <strong>"P2X2" in the "Gene names" textbox</strong>.<br>
+            Using this method by adding a gene in the "Gene names" textbox, the results will only contain articles that include the entered gene(s), in the example case, "F2X2".<br>
+            <strong>More genes can be added by adding the semicolon(";") separator</strong>, like with the keywords.<br>
+            The same way of using <strong>'or' can be used by added using brackets "(" and ")"</strong> in the 'Gene names' textbox, which could be useful when searching for synonymous genes.<br>
+            An example query for genes would be "<strong>(YARS;YARS2);UCN;</strong>".<br>
+            <br>
+            Additionally, the user can <strong>search for articles after a specific publication date in the "Publication Date (After)"</strong> box.<br>
+            This would be useful for searching for new articles after a new GenePanel update. <br>
+            For example, the last GenePanel update was at 12-12-2021, the user can enter this date in the "Publication Date (After) box."<br>
+            The searching tool will search only for articles published after 12-12-2021 and not before.<br>        
+            <br>
+            Finally, there is an <strong>option to exclude gene panel using the "Exclude gene panel" box</strong>. <br>
+            To remove multiple known gene panel results, <strong>use the separator ";" semicolon</strong>.<br> 
+            One example of what the user can write in the "Exclude gene panel" is <strong>"HEMOS;OMIM;"</strong>.<br>
+            Another option is to <strong>exclude all known gene panels, which can be achieved by typing "ALL" in "Exclude gene panel"</strong>.<br>
+            Which can be useful when searching for completely unknown genes.<br>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingThree">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Result page manual
+        </button>
+      </h2>
+      <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+            The result page is divided in multiple columns; the PMID's, Genes, Diseases, Mutations and Score.<br>
+            PMID (PubMed ID) is a clickable link to the PubTator page where the hits have been found. <br>
+            Genes are the genes found by the textmining algorithm in the article.<br> 
+            Diseases are the diseases found by the textmining algorithm in the PubMed article.<br>
+            Mutations are the possible mutations the textmining algorithm has found in the PubMed article.<br>
+            Score is the points the application has given to the hit. <br>
+            This score is related to the number of hits found based on keywords. <br>
+            For example, if the keyword is "deafness", the article will give points if the article contains the keyword "deafness".<br>
+            If "deafness" is found in the title, the article will gain 5+ points. <br>
+            If "deafness" is found in the abstract, the article will gain 2+ points. <br>
+            If the gene P2X2 was in the keywords, it would give 1+ point. <br>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

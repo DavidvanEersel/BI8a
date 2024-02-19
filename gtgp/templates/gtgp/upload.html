@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}GTGP - Upload{% endblock %}
+{% block content %}
+
+<div class="text_all">
+    <h1>Upload</h1>
+    <h2>Gene Panel Upload</h2>
+    <p>Upload up to date GenePanel file here. The contents must be tab separated.<br>
+    File must contain column "Symbol_HGNC", "Aliases", "GenePanels_Symbol" and "GenePanel"<br>
+    The last uploaded GenePanel will be remembered by the website.</p>
+    <h3>Upload</h3>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="user_input">
+            <label for="editor">File:</label> <br/>
+            <textarea
+                    type="text"
+                    name="editor"
+                    id="editor"
+                    placeholder="File content displayed when GenePanel uploaded"
+            ></textarea><br>
+            <input type="file" id="filetoRead" accept=".csv,.tsv"/><br>
+
+            <script>
+                document.getElementById("filetoRead").addEventListener("change", function () {
+                    var file = this.files[0];
+                    if (file) {
+                        var reader = new FileReader();
+                        reader.onload = function (evt) {
+                            console.log(evt);
+                            document.getElementById("editor").value = evt.target.result;
+                        };
+                        reader.onerror = function (evt) {
+                            console.error("An error ocurred reading the file", evt);
+                        };
+                        reader.readAsText(file, "UTF-8");
+                    }
+                }, false);
+            </script>
+            <button type="submit" name="submit">Submit</button>
+        </div>
+    </form>
+</div>
+
+{% endblock content %}

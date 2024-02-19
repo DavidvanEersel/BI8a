@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}GTGP - About{% endblock title%}
+{% block content %}
+
+<div class="text_all">
+  <h1>About us</h1>
+  <h2>Authors</h2>
+  <p>This application has been created by:<br>
+  Dominic Hildebrand & David van Eersel</p>
+  <h2>Our project</h2>
+  <p>
+  This web based application was created for Radboud UMC to find new genes in between GenePanel updates.<br>
+  GenePanel is a tool used in doctors to link genetic diseases to genes so patients can be treated better. <br>
+  <br>
+  The primary function of this tool is to find new genes based on user input. <br>
+  For example, if the user wishes to find articles related to deafness after the sixth of june 2021, 
+  the user can enter these settings in the text boxes and search for articles related to deafness. <br>
+  These articles receive a score based on where the terms are positioned. <br>
+  Scoring is used as a rough indicator as to how interesting the article is going to be to the researcher. <br>
+  As in any case, each article gets the text mined hits.<br>
+  Text mined hits include the genes, diseases and possible related mutations.<br>
+  Found genes might have a relation to GenePanel and are shown in the results if a gene is found that there is a relation.<br>
+  <br>
+  Django was used as a python framework for setting up the website. <br>
+  This tool connects to the NCBI PubMed retrieving articles and uses the PubTator API as textmining algorithm. 
+  </p>
+  </div>
+
+{% endblock content %}

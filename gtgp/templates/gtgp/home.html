@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}GTGP - Home{% endblock title%}
+{% block content %}
+
+<div class="text_all">
+    <h1>GTGP</h1>
+    <h2>Welcome</h2>
+    <p>Search for the newest literature here.</p>
+    <h3>Enter your query</h3>
+    <p></p>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="user_input">
+            <p>
+                <label for="text_keywords">Keywords:</label> <br/>
+                <textarea
+                        type="text"
+                        name="text_keywords"
+                        placeholder="Enter your keywords, example below: 
+                        (deaf;deafness;hearingloss);(ATP;ADP;AMP;cAMP;cyclicAMP);"
+                ></textarea>
+            </p>
+            <p>
+                <label for="text_gene_name">Gene names:</label> <br/>
+                <textarea
+                        type="textarea"
+                        name="text_gene_name"
+                        placeholder="Gene names entered here will appear in results"
+                ></textarea>
+            </p>
+            <p>
+                <label for="date_after">Publication Date (After):</label> <br/>
+                <input type="date" name="date_after"/>
+            </p>
+            <p>
+                <label for="text_exclude_genepanel">Exclude gene panel:</label> <br/>
+                <textarea
+                        type="text"
+                        name="text_exclude_genepanel"
+                        placeholder="Enter genepanel to exclude:"
+                ></textarea>
+            </p>
+            <button type="submit" name="submit">Submit</button>
+        </div>
+    </form>
+    <hr>
+</div>
+
+{% endblock content %}
